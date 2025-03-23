@@ -1,0 +1,349 @@
+{
+    "module_id": "podcasts_workflow",
+    "module_type": "composite",
+    "meta": {
+        "title": "播客生成工作流",
+        "description": "自动生成播客内容的工作流",
+        "category": "example"
+    },
+    "inputs": {
+        "input_defs": []
+    },
+    "outputs": {
+        "output_defs": []
+    },
+    "modules": [
+        {
+            "module_id": "start_module",
+            "module_type": "custom",
+            "meta": {
+                "title": "开始",
+                "description": "工作流的起点",
+                "category": "web"
+            },
+            "inputs": {
+                "input_defs": [
+                    {
+                        "name": "BOT_USER_INPUT",
+                        "type": "string",
+                        "description": "用户输入",
+                        "required": true
+                    },
+                    {
+                        "name": "article_url",
+                        "type": "string",
+                        "description": "文章URL",
+                        "required": false
+                    }
+                ],
+                "input_parameters": [
+                    {
+                        "name": "BOT_USER_INPUT",
+                        "input": {
+                            "type": "string",
+                            "value": {
+                                "type": "literal",
+                                "content": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "article_url",
+                        "input": {
+                            "type": "string",
+                            "value": {
+                                "type": "literal",
+                                "content": "https://example.com/article"
+                            }
+                        }
+                    }
+                ]
+            },
+            "outputs": {
+                "output_defs": [
+                    {
+                        "name": "output",
+                        "type": "string",
+                        "description": "输出结果"
+                    }
+                ]
+            },
+            "position": {
+                "x": 500,
+                "y": 60
+            }
+        },
+        {
+            "module_id": "read_web_content",
+            "module_type": "OpenPageBlock",
+            "meta": {
+                "title": "读取网页内容",
+                "description": "从网页获取内容",
+                "category": "web"
+            },
+            "inputs": {
+                "input_defs": [
+                    {
+                        "name": "url",
+                        "type": "string",
+                        "description": "要读取的网页URL",
+                        "required": true
+                    },
+                    {
+                        "name": "prompt",
+                        "type": "string",
+                        "description": "提示词",
+                        "required": false
+                    },
+                    {
+                        "name": "skip_cache",
+                        "type": "boolean",
+                        "description": "是否跳过缓存",
+                        "required": false
+                    },
+                    {
+                        "name": "type",
+                        "type": "string",
+                        "description": "类型",
+                        "required": false
+                    }
+                ],
+                "input_parameters": [
+                    {
+                        "name": "url",
+                        "input": {
+                            "type": "string",
+                            "value": {
+                                "type": "literal",
+                                "content": "https://example.com/article"
+                            }
+                        }
+                    },
+                    {
+                        "name": "prompt",
+                        "input": {
+                            "type": "string",
+                            "value": {
+                                "type": "literal",
+                                "content": "提取主要内容"
+                            }
+                        }
+                    }
+                ]
+            },
+            "outputs": {
+                "output_defs": [
+                    {
+                        "name": "output",
+                        "type": "string",
+                        "description": "网页内容"
+                    },
+                    {
+                        "name": "error_msg",
+                        "type": "string",
+                        "description": "错误信息"
+                    },
+                    {
+                        "name": "message",
+                        "type": "string",
+                        "description": "消息"
+                    },
+                    {
+                        "name": "pdf_content",
+                        "type": "string",
+                        "description": "PDF内容"
+                    }
+                ]
+            },
+            "position": {
+                "x": 1300,
+                "y": 55
+            }
+        },
+        {
+            "module_id": "generate_script",
+            "module_type": "custom",
+            "meta": {
+                "title": "生成节目台词",
+                "description": "根据网页内容生成节目台词",
+                "category": "ai"
+            },
+            "inputs": {
+                "input_defs": [
+                    {
+                        "name": "input",
+                        "type": "string",
+                        "description": "输入内容",
+                        "required": true
+                    }
+                ],
+                "input_parameters": [
+                    {
+                        "name": "input",
+                        "input": {
+                            "type": "string",
+                            "value": {
+                                "type": "literal",
+                                "content": ""
+                            }
+                        }
+                    }
+                ]
+            },
+            "outputs": {
+                "output_defs": [
+                    {
+                        "name": "output",
+                        "type": "string",
+                        "description": "生成的台词"
+                    }
+                ]
+            },
+            "position": {
+                "x": 1800,
+                "y": 70
+            }
+        },
+        {
+            "module_id": "get_voices",
+            "module_type": "custom",
+            "meta": {
+                "title": "搜取男女声",
+                "description": "搜索合适的男女声音",
+                "category": "audio"
+            },
+            "inputs": {
+                "input_defs": [
+                    {
+                        "name": "input",
+                        "type": "string",
+                        "description": "输入内容",
+                        "required": true
+                    }
+                ],
+                "input_parameters": [
+                    {
+                        "name": "input",
+                        "input": {
+                            "type": "string",
+                            "value": {
+                                "type": "literal",
+                                "content": ""
+                            }
+                        }
+                    }
+                ]
+            },
+            "outputs": {
+                "output_defs": [
+                    {
+                        "name": "key0",
+                        "type": "string",
+                        "description": "男声"
+                    },
+                    {
+                        "name": "key1",
+                        "type": "string",
+                        "description": "女声"
+                    }
+                ]
+            },
+            "position": {
+                "x": 2100,
+                "y": 70
+            }
+        },
+        {
+            "module_id": "if_else",
+            "module_type": "composite",
+            "meta": {
+                "title": "条件分支",
+                "description": "根据条件分支",
+                "category": "if-else"
+            },
+            "inputs": {
+                "input_defs": []
+            },
+            "outputs": {
+                "output_defs": []
+            },
+            "slots": [
+                {
+                    "module_id": "audio_process",
+                    "module_type": "custom",
+                    "meta": {
+                        "title": "合成音频",
+                        "description": "合成最终的音频",
+                        "category": "audio"
+                    },
+                    "inputs": {
+                        "input_defs": [
+                            {
+                                "name": "input",
+                                "type": "string",
+                                "description": "台词输入",
+                                "required": true
+                            },
+                            {
+                                "name": "key0",
+                                "type": "string",
+                                "description": "男声",
+                                "required": true
+                            },
+                            {
+                                "name": "key1",
+                                "type": "string",
+                                "description": "女声",
+                                "required": true
+                            }
+                        ],
+                        "input_parameters": [
+                            {
+                                "name": "input",
+                                "input": {
+                                    "type": "string",
+                                    "value": {
+                                        "type": "literal",
+                                        "content": ""
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "output_defs": [
+                            {
+                                "name": "audio_1",
+                                "type": "string",
+                                "description": "音频文件1"
+                            },
+                            {
+                                "name": "audio_2",
+                                "type": "string",
+                                "description": "音频文件2"
+                            },
+                            {
+                                "name": "format",
+                                "type": "string",
+                                "description": "音频格式"
+                            },
+                            {
+                                "name": "track",
+                                "type": "string",
+                                "description": "音轨数"
+                            }
+                        ]
+                    },
+                    "position": {
+                        "x": 100,
+                        "y": 200
+                    }
+                }
+            ],
+            "position": {
+                "x": 1500,
+                "y": 200
+            }
+        }
+    ]
+} 

@@ -1,0 +1,207 @@
+/* 工作流样式 - Coze风格 */
+
+
+/* GPU加速优化 */
+.vue-flow__node,
+.vue-flow__edge {
+
+}
+
+/* 简化背景网格 - 使用更轻量级的方式 */
+.vue-flow__container {
+
+}
+
+/* 节点基础样式 - Coze风格 */
+.vue-flow__node {
+  background-color: white;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid #f0f0f7;
+  backface-visibility: hidden; /* 减少不必要的GPU层 */
+}
+
+/* 选中状态 */
+.vue-flow__node.selected {
+  box-shadow: 0 0 0 2px #6f5bd5;
+  z-index: 10;
+}
+
+/* 连接线样式 - Coze风格 */
+.vue-flow__edge-path {
+  stroke: #b4b1d8;
+  stroke-width: 3;
+  stroke-dasharray: 5 2;
+}
+
+/* 边动画 */
+.vue-flow__edge.animated .vue-flow__edge-path {
+  animation: flow-path 0.5s infinite linear;
+}
+
+@keyframes flow-path {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -7;
+  }
+}
+
+/* 边交互 */
+.vue-flow__edge {
+  pointer-events: all;
+  z-index: 5;
+}
+
+/* 合并相关选择器 */
+.vue-flow__edge.selected .vue-flow__edge-path,
+.vue-flow__edge:focus .vue-flow__edge-path,
+.vue-flow__edge:hover .vue-flow__edge-path {
+  stroke: #6f5bd5;
+  stroke-width: 4;
+}
+.vue-flow__resize-control.handle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+/* 连接点样式 - Coze风格 */
+.vue-flow__handle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #6f5bd5;
+  border: none;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* 连接点状态 */
+.vue-flow__handle-connecting { background-color: #6f5bd5; }
+.vue-flow__handle-valid { background-color: #52c41a; }
+
+/* 优化: 使用transform, 避免hover时触发布局 */
+.vue-flow__handle:hover {
+  background-color: #6f5bd5;
+  transform: scale(2) translate(50%, -50%);
+  transform-origin: center center;
+}
+
+/* 隐藏非关键UI元素 */
+.vue-flow__minimap,
+.vue-flow__controls,
+.vue-flow .vue-flow__background {
+  display: none;
+}
+
+/* 工具栏 - 固定位置避免重新计算 */
+.workflow-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  contain: content;
+}
+
+/* 按钮样式 */
+.workflow-actions .ant-btn {
+  margin-left: 4px;
+  border-radius: 4px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.workflow-actions .ant-btn-primary {
+  background-color: #6f5bd5;
+  border-color: #6f5bd5;
+}
+
+/* 自定义节点 - 减少嵌套和复杂性 */
+.custom-node {
+  border-radius: 4px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+  contain: layout; /* 隔离布局变化 */
+}
+
+/* 节点头部 */
+.node-header {
+  padding: 25px 15px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  display: flex;
+  align-items: center;
+  contain: strict; /* 严格隔离 */
+}
+
+.node-icon {
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.node-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 节点内容 */
+.node-content {
+  padding: 13px 10px;
+  contain: content; /* 内容隔离 */
+  border-radius: 8px;
+}
+
+/* 参数行 - 使用CSS Grid提高性能 */
+.node-param {
+  margin: 4px 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  font-size: 12px;
+}
+
+/* 悬停效果 - 使用opacity替代背景色变化，减少重绘 */
+.node-param:hover {
+  opacity: 0.9;
+}
+
+/* 参数标签 */
+.param-label {
+  padding: 1px 4px;
+  margin-right: 6px;
+  font-size: 10px;
+  border-radius: 2px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* 参数名称 */
+.param-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 输入参数标签 */
+.input-label {
+  background-color: #f0f7ff;
+  color: #1677ff;
+}
+
+/* 输出参数标签 */
+.output-label {
+  background-color: #f6ffed;
+  color: #1677ff;
+}
+
+/* 节点类型颜色 - 使用扁平色彩 */
+.node-type-red .node-header { background: linear-gradient(#ebf9f9 0%, rgba(252, 252, 252, 1) 100%); }
+.node-type-yellow .node-header { background: linear-gradient(#f9f9f9 0%, rgba(252, 252, 252, 1) 100%); }
+.node-type-start .node-header { background: linear-gradient(#f9f9f9 0%, rgba(252, 252, 252, 1) 100%); }
+.node-type-default .node-header { background: linear-gradient(#f2f2ff 0%, rgba(252, 252, 252, 1) 100%); } 
