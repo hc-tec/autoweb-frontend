@@ -41,6 +41,10 @@
             <template #icon><folder-outlined /></template>
             添加嵌套节点
           </a-button>
+          <a-button type="primary" @click="addSlotNode">
+            <template #icon><branches-outlined /></template>
+            添加条件节点
+          </a-button>
           <a-button @click="autoLayout">
             <template #icon><apartment-outlined /></template>
             自动布局
@@ -56,11 +60,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, reactive, shallowRef, markRaw, onMounted } from 'vue'
+import { ref, computed, watch, reactive, shallowRef, markRaw, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, Panel, useVueFlow } from '@vue-flow/core'
-import { PlusOutlined, ApartmentOutlined, ExportOutlined, FolderOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, ApartmentOutlined, ExportOutlined, FolderOutlined, BranchesOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import CustomNode from './CustomNode.vue'
 import CompositeNode from './CompositeNode.vue'
+import { saveWorkflowToJson } from '@/utils/workflowUtils'
 
 const props = defineProps({
   nodes: {
@@ -73,9 +78,8 @@ const props = defineProps({
   }
 })
 
-const { onNodeClick, onEdgeClick, addEdges, addNodes, setNodes } = useVueFlow();
-
-const emit = defineEmits(['nodeClick', 'edgeConnect', 'update:nodes', 'update:edges'])
+const { onNodeClick, onEdgeClick, addEdges, addNodes, setNodes, removeNodes, removeEdges, getSelectedNodes, getSelectedEdges } = useVueFlow();
+const emit = defineEmits(['nodeClick', 'edgeConnect', 'update:nodes', 'update:edges', 'elementsDeleted'])
 
 // 创建本地响应式引用，用于v-model绑定
 const nodes = ref(props.nodes);
@@ -208,6 +212,119 @@ const addNode = () => {
   addNodes([newNode])
 }
 
+// 添加带slots的节点
+const addSlotNode = () => {
+  // 创建唯一ID
+  const newNodeId = `slotnode-${Date.now()}`
+  const slotCompositeId = `composite-${Date.now()}`
+  
+  // 确定新节点位置（相对于画布）
+  const position = { x: 100, y: 100 }
+  const slotPosition = { x: 100, y: 250 }
+  const existingNodes = nodes.value
+  
+  if (existingNodes.length > 0) {
+    // 新节点放在最右侧节点的右边
+    const rightmostNode = existingNodes.reduce((prev, current) => {
+      return (prev.position.x > current.position.x) ? prev : current
+    })
+    position.x = rightmostNode.position.x + 30
+    position.y = rightmostNode.position.y - 20
+    slotPosition.x = position.x
+    slotPosition.y = position.y + 150
+  }
+  
+  // 创建slot模块
+  const slotModule = {
+    id: slotCompositeId,
+    type: 'composite',
+    position: slotPosition,
+    data: {
+      module_id: slotCompositeId,
+      module_type: 'composite',
+      position: slotPosition,
+      meta: {
+        title: '条件分支-true',
+        description: '条件为真时执行',
+        category: 'composite'
+      },
+      inputs: {
+        input_defs: []
+      },
+      outputs: {
+        output_defs: []
+      }
+    }
+  }
+  
+  // 创建带slot的节点
+  const newNode = {
+    id: newNodeId,
+    type: 'custom',
+    position,
+    data: {
+      module_id: newNodeId,
+      module_type: 'custom',
+      position,
+      meta: {
+        title: '条件分支节点',
+        description: '包含条件分支的节点',
+        category: 'if-else'
+      },
+      inputs: {
+        input_defs: [
+          {
+            name: 'input',
+            type: 'string',
+            description: '输入参数',
+            required: true
+          }
+        ]
+      },
+      outputs: {
+        output_defs: [
+          {
+            name: 'output',
+            type: 'string',
+            description: '输出结果'
+          }
+        ]
+      },
+      slots: {
+        'if-else-true': {
+          module_id: slotCompositeId,
+          module_type: 'composite',
+          meta: {
+            title: '条件分支-true',
+            description: '条件为真时执行',
+            category: 'if-else'
+          },
+          inputs: {
+            input_defs: []
+          },
+          outputs: {
+            output_defs: []
+          }
+        }
+      }
+    }
+  }
+  
+  // 添加节点到流程图
+  addNodes([newNode, slotModule])
+  
+  // 添加slot连接
+  const slotEdge = {
+    id: `edge-${newNodeId}-to-${slotCompositeId}`,
+    source: newNodeId,
+    target: slotCompositeId,
+    sourceHandle: 'slot-if-else-true',
+    data: { slotName: 'if-else-true' }
+  }
+  
+  addEdges([slotEdge])
+}
+
 // 添加复合节点
 const addCompositeNode = () => {
   // 创建唯一ID
@@ -306,6 +423,48 @@ const exportWorkflow = () => {
   linkElement.setAttribute('href', dataUri)
   linkElement.setAttribute('download', exportFileDefaultName)
   linkElement.click()
+}
+
+// 初始化时添加键盘事件监听
+onMounted(() => {
+  // 添加键盘事件监听器
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+// 组件卸载时移除事件监听
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+})
+
+// 处理键盘事件
+const handleKeyDown = (event) => {
+  // 如果按下的是Delete键或Backspace键
+  if (event.key === 'Delete' || event.key === 'Backspace') {
+    deleteSelectedElements()
+  }
+}
+
+// 删除选中的节点和边
+const deleteSelectedElements = () => {
+  const selectedNodes = getSelectedNodes.value
+  const selectedEdges = getSelectedEdges.value
+  
+  if (selectedNodes.length === 0 && selectedEdges.length === 0) {
+    return // 没有选中任何元素，不执行操作
+  }
+  
+  // 收集要删除的节点ID和边ID
+  const nodesToDelete = selectedNodes.map(node => node.id)
+  const edgesToDelete = selectedEdges.map(edge => edge.id)
+  
+  // 执行删除操作
+  removeNodes(nodesToDelete)
+  removeEdges(edgesToDelete)
+
+  // 如果有删除操作，触发事件通知父组件
+  if (nodesToDelete.length > 0 || edgesToDelete.length > 0) {
+    emit('elementsDeleted', { nodes: nodesToDelete, edges: edgesToDelete })
+  }
 }
 </script>
 

@@ -26,7 +26,6 @@
         type="target"
         :position="Position.Left"
         id="input"
-        
         class="handle-input"
       />
       
@@ -35,9 +34,21 @@
         type="source"
         :position="Position.Right"
         id="output"
-        
         class="handle-output"
       />
+      
+      <!-- 如果有slots，为每个slot添加底部连接点 -->
+      <template v-if="hasSlots">
+        <Handle
+          v-for="(slotName, index) in slotNames"
+          :key="`slot-${slotName}`"
+          type="source"
+          :position="Position.Bottom"
+          :id="`slot-${slotName}`"
+          :style="getSlotHandleStyle(index, slotNames.length)"
+          class="handle-slot"
+        />
+      </template>
     </template>
   </BaseNode>
 </template>
@@ -64,6 +75,9 @@ const props = defineProps({
     default: false
   }
 })
+
+// Vue Flow的hooks
+const { getEdges } = useVueFlow();
 
 // 优化3: 缓存节点图标，减少每次渲染时的计算
 const nodeIcon = computed(() => {
@@ -92,7 +106,52 @@ const nodeIcon = computed(() => {
       return '⚙️'; // 默认图标
   }
 })
+
+// 检查是否有slots
+const hasSlots = computed(() => {
+  return props.data.slots && Object.keys(props.data.slots).length > 0;
+});
+
+// 获取所有slot名称
+const slotNames = computed(() => {
+  if (!hasSlots.value) return [];
+  
+  // 从slots对象中获取所有slot名称
+  const names = Object.keys(props.data.slots || {});
+  
+  // 从边关系中查找slot名称
+  if (names.length === 0) {
+    const allEdges = getEdges.value;
+    
+    // 查找从当前节点出发、sourceHandle以"slot-"开头的所有边
+    const slotEdges = allEdges.filter(edge => 
+      edge.source === props.id && 
+      edge.sourceHandle && 
+      edge.sourceHandle.startsWith('slot-')
+    );
+    
+    // 从sourceHandle提取slot名称
+    return slotEdges.map(edge => edge.sourceHandle.replace('slot-', ''));
+  }
+  
+  return names;
+});
+
+// 为每个slot计算handle位置
+const getSlotHandleStyle = (index, total) => {
+  const offset = (index + 1) / (total + 1) * 100;
+  return {
+    left: `${offset}%`,
+    bottom: '-8px',
+  };
+};
 </script>
 
 <style>
+.handle-slot {
+  width: 12px;
+  height: 12px;
+  background-color: #6f5bd5;
+  border: 2px solid white;
+}
 </style> 

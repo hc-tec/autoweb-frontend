@@ -58,8 +58,8 @@
 .vue-flow__edge.selected .vue-flow__edge-path,
 .vue-flow__edge:focus .vue-flow__edge-path,
 .vue-flow__edge:hover .vue-flow__edge-path {
-  stroke: #6f5bd5;
-  stroke-width: 4;
+  stroke: greenyellow !important;
+  stroke-width: 4 !important;
 }
 .vue-flow__resize-control.handle {
     width: 12px;
@@ -73,7 +73,7 @@
   border-radius: 50%;
   background-color: #6f5bd5;
   border: none;
-  transition: transform 0.2s ease-in-out;
+  transition: width 0.2s ease-in-out, height 0.2s ease-in-out;
 }
 
 /* 连接点状态 */
@@ -83,8 +83,8 @@
 /* 优化: 使用transform, 避免hover时触发布局 */
 .vue-flow__handle:hover {
   background-color: #6f5bd5;
-  transform: scale(2) translate(50%, -50%);
-  transform-origin: center center;
+  width: 20px;
+  height: 20px;
 }
 
 /* 隐藏非关键UI元素 */

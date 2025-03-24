@@ -10,13 +10,13 @@ export function loadWorkflowFromJson(workflowJson) {
     return { nodes: [], edges: [] }
   }
   
+  const allNodes = []
+  const allEdges = []
+  
   // 创建一个递归函数，确保能够处理嵌套节点中的子模块
-  function processModules(modules, allNodes = [], parentId = null) {
-    modules.forEach((module, index) => {
+  function processModules(modules, parentId = null) {
+    modules.forEach((module) => {
       // 计算节点位置
-      // 1. 如果模块有position属性，优先使用
-      // 2. 如果是子节点，需要加上父节点的位置
-      // 3. 如果都没有，则使用默认布局
       let posX, posY
       
       if (module.position) {
@@ -26,8 +26,7 @@ export function loadWorkflowFromJson(workflowJson) {
       }
       
       // 确定节点类型
-      const hasChildren = module.slots && Array.isArray(module.slots) && module.slots.length > 0
-      const nodeType = hasChildren || module.module_type === 'composite' ? 'composite' : 'custom'
+      const nodeType = module.module_type === 'composite' ? 'composite' : 'custom'
       
       // 确定节点分类
       const moduleCategory = 'default'
@@ -68,49 +67,84 @@ export function loadWorkflowFromJson(workflowJson) {
       // 添加节点到结果数组
       allNodes.push(node)
       
-      // 递归处理子模块
-      if (hasChildren) {
-        // 确保子模块中的每个模块都有module_id
-        const childrenModules = module.slots.filter(slot => slot.module_id)
-        if (childrenModules.length > 0) {
-          // 将当前节点的位置传递给子节点处理函数
-          processModules(childrenModules, allNodes, module.module_id)
-        }
+      // 处理slots（如果有）
+      if (module.slots && typeof module.slots === 'object') {
+        // 遍历每个slot
+        Object.entries(module.slots).forEach(([slotName, slotModule]) => {
+          if (slotModule && slotModule.module_id) {
+            // 递归处理slot模块
+            processModules([slotModule])
+            
+            // 创建从父模块到slot模块的连接边
+            const slotEdge = {
+              id: `edge-${module.module_id}-to-${slotModule.module_id}`,
+              source: module.module_id,
+              target: slotModule.module_id,
+              sourceHandle: `slot-${slotName}`, // 使用slot名称作为sourceHandle
+              // 不指定targetHandle，默认连接到目标的输入端点
+              data: { slotName }
+            }
+            
+            allEdges.push(slotEdge)
+          }
+        })
+      }
+      
+      // 处理composite模块中的modules数组
+      if (module.module_type === 'composite' && module.modules && Array.isArray(module.modules)) {
+        // 递归处理子模块
+        processModules(module.modules, module.module_id)
       }
     })
-    
-    return allNodes
   }
   
-  // 处理所有模块
-  const nodes = processModules(workflowJson.modules)
+  // 处理所有顶层模块
+  processModules(workflowJson.modules)
   
-  // 创建边（连接关系）
-  const edges = []
-  
-  return { nodes, edges }
+  return { nodes: allNodes, edges: allEdges }
 }
 
 /**
  * 将VueFlow节点和边转换回工作流JSON
  * 
- * @param {Array} nodes VueFlow节点数组
- * @param {Array} edges VueFlow边数组
+ * @param {Object} flowData 包含nodes和edges的对象
  * @returns {Object} 工作流JSON数据
  */
-export function saveWorkflowToJson(nodes, edges) {
+export function saveWorkflowToJson(flowData) {
+  const { nodes, edges } = flowData
   // 创建节点映射，用于快速查找
   const nodeMap = new Map()
   nodes.forEach(node => {
     nodeMap.set(node.id, node)
   })
   
+  // 创建从源节点到目标节点的边映射
+  const edgeMap = new Map()
+  edges.forEach(edge => {
+    if (!edgeMap.has(edge.source)) {
+      edgeMap.set(edge.source, [])
+    }
+    edgeMap.get(edge.source).push(edge)
+  })
+  
+  // 跟踪已处理的节点ID，避免重复处理
+  const processedNodeIds = new Set()
+  
   // 找出顶层节点（没有父节点的节点）
   const topLevelNodes = nodes.filter(node => !node.parentNode)
   
-  // 提取模块数据，递归处理子节点
-  function extractModuleData(node, parentPosition = { x: 0, y: 0 }) {
+  // 提取模块数据
+  function extractModuleData(node) {
     const { data, position } = node
+    
+    // 如果节点已处理过，避免重复处理
+    if (processedNodeIds.has(node.id)) {
+      console.warn(`节点 ${node.id} 已处理过，避免重复处理`)
+      return null
+    }
+    
+    // 将节点标记为已处理
+    processedNodeIds.add(node.id)
     
     // 基本模块数据
     const moduleData = {
@@ -118,40 +152,63 @@ export function saveWorkflowToJson(nodes, edges) {
       module_type: data.module_type,
       meta: data.meta,
       inputs: data.inputs,
-      outputs: data.outputs
-    }
-    
-    // 保存节点位置信息
-    // 对于顶层节点，直接保存绝对位置
-    // 对于子节点，保存相对于父节点的位置
-    if (node.parentNode) {
-      // 子节点，计算相对位置
-      moduleData.position = {
-        x: position.x - parentPosition.x,
-        y: position.y - parentPosition.y
-      }
-    } else {
-      // 顶层节点，保存绝对位置
-      moduleData.position = {
+      outputs: data.outputs,
+      position: {
         x: position.x,
         y: position.y
       }
     }
     
-    // 如果是嵌套节点，添加特殊属性
-    if (node.type === 'composite' || data.meta?.category === 'composite') {
-      moduleData.width = node.style?.width || 400
-      moduleData.height = node.style?.height || 300
+    // 处理slots（如果是custom类型节点并且有连接到slot的边）
+    if (edgeMap.has(node.id)) {
+      const slotEdges = edgeMap.get(node.id).filter(edge => 
+        edge.sourceHandle && edge.sourceHandle.startsWith('slot-')
+      )
       
-      // 查找所有子节点
-      const childNodes = nodes.filter(n => n.parentNode === node.id)
+      if (slotEdges.length > 0) {
+        moduleData.slots = {}
+        
+        // 为每个slot边创建slot数据
+        slotEdges.forEach(edge => {
+          const slotName = edge.sourceHandle.replace('slot-', '')
+          const targetNode = nodeMap.get(edge.target)
+          
+          if (targetNode) {
+            // 递归提取slot模块数据
+            const slotModuleData = extractModuleData(targetNode)
+            if (slotModuleData) {
+              moduleData.slots[slotName] = slotModuleData
+            }
+          }
+        })
+        
+        // 如果没有有效的slot，删除slots字段
+        if (Object.keys(moduleData.slots).length === 0) {
+          delete moduleData.slots
+        }
+      }
+    }
+    
+    // 处理composite模块中的子节点（作为modules数组保存）
+    if (data.module_type === 'composite') {
+      // 查找所有直接子节点（父节点为当前节点但不是通过slot连接的）
+      const childNodes = nodes.filter(n => 
+        n.parentNode === node.id && !processedNodeIds.has(n.id)
+      )
       
-      // 如果有子节点，添加到slots字段
+      // 添加子节点到modules数组
       if (childNodes.length > 0) {
-        // 递归处理子节点时，传递当前节点的位置
-        moduleData.slots = childNodes.map(childNode => 
-          extractModuleData(childNode, position)
-        )
+        moduleData.modules = []
+        
+        childNodes.forEach(childNode => {
+          const childModuleData = extractModuleData(childNode)
+          if (childModuleData) {
+            moduleData.modules.push(childModuleData)
+          }
+        })
+      } else {
+        // 即使没有子节点，也保留空的modules数组
+        moduleData.modules = []
       }
     }
     
@@ -159,7 +216,16 @@ export function saveWorkflowToJson(nodes, edges) {
   }
   
   // 提取所有顶层模块数据
-  const modules = topLevelNodes.map(node => extractModuleData(node))
+  const modules = []
+  topLevelNodes.forEach(node => {
+    // 确保节点还没被处理过（可能作为某个节点的slot）
+    if (!processedNodeIds.has(node.id)) {
+      const moduleData = extractModuleData(node)
+      if (moduleData) {
+        modules.push(moduleData)
+      }
+    }
+  })
   
   // 创建工作流JSON对象
   const workflowJson = {
@@ -210,20 +276,41 @@ export function validateWorkflowJson(workflowJson) {
     return { isValid: false, errors }
   }
   
-  // 检查每个模块
-  workflowJson.modules.forEach((module, index) => {
-    if (!module.module_id) {
-      errors.push(`模块 #${index+1} 缺少module_id`)
-    }
-    
-    if (!module.module_type) {
-      errors.push(`模块 #${index+1} 缺少module_type`)
-    }
-    
-    if (!module.meta || typeof module.meta !== 'object') {
-      errors.push(`模块 #${index+1} 缺少meta对象或格式不正确`)
-    }
-  })
+  // 递归检查模块及其子模块
+  function validateModules(modules, path = '') {
+    modules.forEach((module, index) => {
+      const currentPath = path ? `${path} > 模块 #${index+1}` : `模块 #${index+1}`
+      
+      if (!module.module_id) {
+        errors.push(`${currentPath} 缺少module_id`)
+      }
+      
+      if (!module.module_type) {
+        errors.push(`${currentPath} 缺少module_type`)
+      }
+      
+      if (!module.meta || typeof module.meta !== 'object') {
+        errors.push(`${currentPath} 缺少meta对象或格式不正确`)
+      }
+      
+      // 如果是composite模块，检查其子模块
+      if (module.module_type === 'composite' && module.modules && Array.isArray(module.modules)) {
+        validateModules(module.modules, currentPath)
+      }
+      
+      // 如果有slots，检查每个slot中的模块
+      if (module.slots && typeof module.slots === 'object') {
+        Object.entries(module.slots).forEach(([slotName, slotModule]) => {
+          if (slotModule) {
+            validateModules([slotModule], `${currentPath} > slot ${slotName}`)
+          }
+        })
+      }
+    })
+  }
+  
+  // 检查顶层模块及其所有子模块
+  validateModules(workflowJson.modules)
   
   return { 
     isValid: errors.length === 0,

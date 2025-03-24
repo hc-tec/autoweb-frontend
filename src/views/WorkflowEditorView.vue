@@ -5,6 +5,7 @@
       v-model:edges="edges"
       @nodeClick="onNodeClick"
       @edgeConnect="onEdgeConnect"
+      @elementsDeleted="onElementsDeleted"
     />
     
     <!-- 属性面板抽屉 -->
@@ -59,31 +60,12 @@ const loadWorkflow = async () => {
     // 解析JSON并转换为VueFlow节点和边
     const { nodes: flowNodes, edges: flowEdges } = loadWorkflowFromJson(workflowJson.value)
     
-    // 定义边一次性，避免频繁创建对象
-    const customEdges = [
-      { 
-        id: 'e1', 
-        source: 'start_module', 
-        target: 'read_web_content',
-      },
-      { 
-        id: 'e2', 
-        source: 'read_web_content', 
-        target: 'generate_script',
-      },
-      { 
-        id: 'e3', 
-        source: 'generate_script', 
-        target: 'if_else',
-      },
-    ];
-    
     nodes.value = flowNodes;
-    edges.value = customEdges;
+    edges.value = flowEdges;
     
     notification.success({
       message: '工作流加载成功',
-      description: `已加载 ${flowNodes.length} 个节点和 ${customEdges.length} 条连接`
+      description: `已加载 ${flowNodes.length} 个节点和 ${flowEdges.length} 条连接`
     });
   } catch (error) {
     console.error('加载工作流失败', error);
@@ -148,6 +130,15 @@ const updateNodeProperties = (nodeId, properties) => {
 const onEdgeConnect = (newEdge) => {
   console.log('New edge connected:', newEdge);
   // 已经在子组件中处理了添加到edges
+}
+
+// 元素删除事件
+const onElementsDeleted = (deletedElements) => {
+  // 如果没有workflowJson数据，则不需要处理
+  if (!workflowJson.value) return;
+  
+  
+
 }
 
 onMounted(() => {

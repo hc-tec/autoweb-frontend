@@ -255,7 +255,7 @@
         },
         {
             "module_id": "if_else",
-            "module_type": "composite",
+            "module_type": "custom",
             "meta": {
                 "title": "条件分支",
                 "description": "根据条件分支",
@@ -267,79 +267,120 @@
             "outputs": {
                 "output_defs": []
             },
-            "slots": [
-                {
-                    "module_id": "audio_process",
-                    "module_type": "custom",
+            "slots": {
+                "if-else-true": {
+                    "module_id": "if_else_true",
+                    "module_type": "composite",
                     "meta": {
-                        "title": "合成音频",
-                        "description": "合成最终的音频",
-                        "category": "audio"
+                        "title": "条件分支-true",
+                        "description": "条件为真时执行",
+                        "category": "if-else"
                     },
                     "inputs": {
-                        "input_defs": [
-                            {
-                                "name": "input",
-                                "type": "string",
-                                "description": "台词输入",
-                                "required": true
-                            },
-                            {
-                                "name": "key0",
-                                "type": "string",
-                                "description": "男声",
-                                "required": true
-                            },
-                            {
-                                "name": "key1",
-                                "type": "string",
-                                "description": "女声",
-                                "required": true
-                            }
-                        ],
-                        "input_parameters": [
-                            {
-                                "name": "input",
-                                "input": {
-                                    "type": "string",
-                                    "value": {
-                                        "type": "literal",
-                                        "content": ""
-                                    }
-                                }
-                            }
-                        ]
+                        "input_defs": []
                     },
                     "outputs": {
-                        "output_defs": [
-                            {
-                                "name": "audio_1",
-                                "type": "string",
-                                "description": "音频文件1"
-                            },
-                            {
-                                "name": "audio_2",
-                                "type": "string",
-                                "description": "音频文件2"
-                            },
-                            {
-                                "name": "format",
-                                "type": "string",
-                                "description": "音频格式"
-                            },
-                            {
-                                "name": "track",
-                                "type": "string",
-                                "description": "音轨数"
-                            }
-                        ]
+                        "output_defs": []
                     },
+                    "modules": [
+                        {
+                            "module_id": "audio_process",
+                            "module_type": "custom",
+                            "meta": {
+                                "title": "合成音频",
+                                "description": "合成最终的音频",
+                                "category": "audio"
+                            },
+                            "inputs": {
+                                "input_defs": [
+                                    {
+                                        "name": "input",
+                                        "type": "string",
+                                        "description": "台词输入",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "key0",
+                                        "type": "string",
+                                        "description": "男声",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "key1",
+                                        "type": "string",
+                                        "description": "女声",
+                                        "required": true
+                                    }
+                                ],
+                                "input_parameters": [
+                                    {
+                                        "name": "input",
+                                        "input": {
+                                            "type": "string",
+                                            "value": {
+                                                "type": "literal",
+                                                "content": ""
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "outputs": {
+                                "output_defs": [
+                                    {
+                                        "name": "audio_1",
+                                        "type": "string",
+                                        "description": "音频文件1"
+                                    },
+                                    {
+                                        "name": "audio_2",
+                                        "type": "string",
+                                        "description": "音频文件2"
+                                    },
+                                    {
+                                        "name": "format",
+                                        "type": "string",
+                                        "description": "音频格式"
+                                    },
+                                    {
+                                        "name": "track",
+                                        "type": "string",
+                                        "description": "音轨数"
+                                    }
+                                ]
+                            },
+                            "position": {
+                                "x": 100,
+                                "y": 200
+                            }
+                        }
+                    ],
                     "position": {
-                        "x": 100,
-                        "y": 200
+                        "x": 1600,
+                        "y": 400
+                    }
+                },
+                "if-else-false": {
+                    "module_id": "if_else_false",
+                    "module_type": "composite",
+                    "meta": {
+                        "title": "条件分支-false",
+                        "description": "条件为假时执行",
+                        "category": "if-else"
+                    },
+                    "inputs": {
+                        "input_defs": []
+                    },
+                    "outputs": {
+                        "output_defs": []
+                    },
+                    "modules": [],
+                    "position": {
+                        "x": 1800,
+                        "y": 0
                     }
                 }
-            ],
+            },
             "position": {
                 "x": 1500,
                 "y": 200

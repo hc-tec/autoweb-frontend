@@ -180,6 +180,38 @@
         </div>
         <a-empty v-else description="暂无输出参数" />
       </a-tab-pane>
+      
+      <!-- 对于自定义节点，添加slots管理标签页 -->
+      <a-tab-pane v-if="!isCompositeNode && formState.module_type === 'custom'" key="slots" tab="条件分支">
+        <div class="slots-manager">
+          <div class="slots-header">
+            <div class="panel-title">条件分支管理</div>
+            <a-button type="primary" size="small" @click="addSlot">
+              <template #icon><plus-outlined /></template>
+              添加分支
+            </a-button>
+          </div>
+          
+          <a-empty v-if="!hasSlots" description="暂无条件分支" />
+          
+          <div v-else class="slots-list">
+            <div v-for="(slotModule, slotName) in formState.slots" :key="slotName" class="slot-item">
+              <div class="slot-info">
+                <div class="slot-name">{{ slotName }}</div>
+                <div class="slot-target">{{ slotModule.meta.title }}</div>
+              </div>
+              <div class="slot-actions">
+                <a-button type="text" size="small" @click="editSlot(slotName)">
+                  <template #icon><edit-outlined /></template>
+                </a-button>
+                <a-button type="text" size="small" danger @click="removeSlot(slotName)">
+                  <template #icon><delete-outlined /></template>
+                </a-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
@@ -304,6 +336,11 @@ const { getNodes, addNodes, getNode, removeNodes, setNodes } = useVueFlow()
 const isCompositeNode = computed(() => {
   return props.node.type === 'composite' || props.node.data.module_type === 'composite';
 })
+
+// 检查是否有slots
+const hasSlots = computed(() => {
+  return formState.value.slots && Object.keys(formState.value.slots).length > 0;
+});
 
 // 子节点显示模式
 const childrenDisplayMode = ref('free');
@@ -447,6 +484,51 @@ const getTypeLabel = (type) => {
   }
   return typeMap[type] || type;
 }
+
+// 添加slot
+const addSlot = () => {
+  if (!formState.value.slots) {
+    formState.value.slots = {};
+  }
+  
+  // 创建新的slot名称
+  const slotName = `slot-${Object.keys(formState.value.slots).length + 1}`;
+  const slotNodeId = `slot-${slotName}-${Date.now()}`;
+  
+  // 创建slot对应的composite模块
+  formState.value.slots[slotName] = {
+    module_id: slotNodeId,
+    module_type: 'composite',
+    meta: {
+      title: `分支 ${Object.keys(formState.value.slots).length + 1}`,
+      description: '分支逻辑',
+      category: 'slot'
+    },
+    inputs: {
+      input_defs: []
+    },
+    outputs: {
+      output_defs: []
+    }
+  };
+  
+  message.success('已添加分支');
+};
+
+// 编辑slot
+const editSlot = (slotName) => {
+  message.info(`请直接编辑${slotName}的属性`);
+};
+
+// 删除slot
+const removeSlot = (slotName) => {
+  if (formState.value.slots && formState.value.slots[slotName]) {
+    const { ...slots } = formState.value.slots;
+    delete slots[slotName];
+    formState.value.slots = slots;
+    message.success('已删除分支');
+  }
+};
 </script>
 
 <style scoped>
@@ -616,6 +698,63 @@ const getTypeLabel = (type) => {
 }
 
 .child-node-actions a {
+  margin-left: 12px;
+}
+
+.slots-manager {
+  padding: 16px;
+  border: 1px solid #f0f0f7;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.slots-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f9f8ff;
+  border-bottom: 1px solid #f0f0f7;
+  margin-bottom: 8px;
+}
+
+.slots-list {
+  padding: 16px;
+}
+
+.slot-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f7;
+}
+
+.slot-info {
+  display: flex;
+  align-items: center;
+}
+
+.slot-name {
+  font-weight: 500;
+  color: #333;
+  margin-right: 12px;
+}
+
+.slot-target {
+  background-color: #f1f0ff;
+  color: #6f5bd5;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+.slot-actions {
+  display: flex;
+  align-items: center;
+}
+
+.slot-actions a {
   margin-left: 12px;
 }
 </style> 
