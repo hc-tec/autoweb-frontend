@@ -26,7 +26,7 @@ export function loadWorkflowFromJson(workflowJson) {
       }
       
       // 确定节点类型
-      const nodeType = module.module_type === 'composite' ? 'composite' : 'custom'
+      const nodeType = module.is_composited ? 'composite' : 'custom'
       
       // 确定节点分类
       const moduleCategory = 'default'
@@ -91,7 +91,7 @@ export function loadWorkflowFromJson(workflowJson) {
       }
       
       // 处理composite模块中的modules数组
-      if (module.module_type === 'composite' && module.modules && Array.isArray(module.modules)) {
+      if (module.is_composited && module.modules && Array.isArray(module.modules)) {
         // 递归处理子模块
         processModules(module.modules, module.module_id)
       }
@@ -136,6 +136,7 @@ export function saveWorkflowToJson(flowData) {
   // 提取模块数据
   function extractModuleData(node) {
     const { data, position } = node
+    console.log(data);
     
     // 如果节点已处理过，避免重复处理
     if (processedNodeIds.has(node.id)) {
@@ -150,6 +151,7 @@ export function saveWorkflowToJson(flowData) {
     const moduleData = {
       module_id: data.module_id,
       module_type: data.module_type,
+      is_composited: data.is_composited,
       meta: data.meta,
       inputs: data.inputs,
       outputs: data.outputs,
@@ -190,7 +192,7 @@ export function saveWorkflowToJson(flowData) {
     }
     
     // 处理composite模块中的子节点（作为modules数组保存）
-    if (data.module_type === 'composite') {
+    if (data.is_composited) {
       // 查找所有直接子节点（父节点为当前节点但不是通过slot连接的）
       const childNodes = nodes.filter(n => 
         n.parentNode === node.id && !processedNodeIds.has(n.id)
@@ -231,6 +233,7 @@ export function saveWorkflowToJson(flowData) {
   const workflowJson = {
     module_id: 'workflow_' + Date.now(),
     module_type: 'composite',
+    "is_composited": true,
     meta: {
       title: '工作流',
       description: '自动生成的工作流',
@@ -294,7 +297,7 @@ export function validateWorkflowJson(workflowJson) {
       }
       
       // 如果是composite模块，检查其子模块
-      if (module.module_type === 'composite' && module.modules && Array.isArray(module.modules)) {
+      if (module.is_composited && module.modules && Array.isArray(module.modules)) {
         validateModules(module.modules, currentPath)
       }
       

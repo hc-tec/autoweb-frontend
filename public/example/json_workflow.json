@@ -1,6 +1,7 @@
 {
     "module_id": "podcasts_workflow",
     "module_type": "composite",
+    "is_composited": true,
     "meta": {
         "title": "播客生成工作流",
         "description": "自动生成播客内容的工作流",
@@ -15,7 +16,8 @@
     "modules": [
         {
             "module_id": "start_module",
-            "module_type": "custom",
+            "module_type": "atomic",
+            "is_composited": false,
             "meta": {
                 "title": "开始",
                 "description": "工作流的起点",
@@ -76,6 +78,7 @@
         {
             "module_id": "read_web_content",
             "module_type": "OpenPageBlock",
+            "is_composited": false,
             "meta": {
                 "title": "读取网页内容",
                 "description": "从网页获取内容",
@@ -84,7 +87,7 @@
             "inputs": {
                 "input_defs": [
                     {
-                        "name": "url",
+                        "name": "page_url",
                         "type": "string",
                         "description": "要读取的网页URL",
                         "required": true
@@ -110,7 +113,7 @@
                 ],
                 "input_parameters": [
                     {
-                        "name": "url",
+                        "name": "page_url",
                         "input": {
                             "type": "string",
                             "value": {
@@ -124,8 +127,12 @@
                         "input": {
                             "type": "string",
                             "value": {
-                                "type": "literal",
-                                "content": "提取主要内容"
+                                "type": "ref",
+                                "content": {
+                                    "moduleID": "start_module",
+                                    "name": "BOT_USER_INPUT",
+                                    "source": "block-output"
+                                }
                             }
                         }
                     }
@@ -162,7 +169,8 @@
         },
         {
             "module_id": "generate_script",
-            "module_type": "custom",
+            "module_type": "atomic",
+            "is_composited": false,
             "meta": {
                 "title": "生成节目台词",
                 "description": "根据网页内容生成节目台词",
@@ -206,7 +214,8 @@
         },
         {
             "module_id": "get_voices",
-            "module_type": "custom",
+            "module_type": "atomic",
+            "is_composited": false,
             "meta": {
                 "title": "搜取男女声",
                 "description": "搜索合适的男女声音",
@@ -255,7 +264,8 @@
         },
         {
             "module_id": "if_else",
-            "module_type": "custom",
+            "module_type": "slot_container",
+            "is_composited": false,
             "meta": {
                 "title": "条件分支",
                 "description": "根据条件分支",
@@ -270,7 +280,8 @@
             "slots": {
                 "if-else-true": {
                     "module_id": "if_else_true",
-                    "module_type": "composite",
+                    "module_type": "slot",
+                    "is_composited": true,
                     "meta": {
                         "title": "条件分支-true",
                         "description": "条件为真时执行",
@@ -285,7 +296,8 @@
                     "modules": [
                         {
                             "module_id": "audio_process",
-                            "module_type": "custom",
+                            "module_type": "atomic",
+                            "is_composited": false,
                             "meta": {
                                 "title": "合成音频",
                                 "description": "合成最终的音频",
@@ -362,7 +374,8 @@
                 },
                 "if-else-false": {
                     "module_id": "if_else_false",
-                    "module_type": "composite",
+                    "module_type": "slot",
+                    "is_composited": true,
                     "meta": {
                         "title": "条件分支-false",
                         "description": "条件为假时执行",

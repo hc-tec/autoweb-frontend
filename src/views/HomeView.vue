@@ -16,12 +16,12 @@
           </a-button>
         </router-link>
         
-        <router-link to="/about">
+        <!-- <router-link to="/about">
           <a-button>
             <template #icon><info-circle-outlined /></template>
             关于
           </a-button>
-        </router-link>
+        </router-link> -->
       </a-space>
     </a-card>
   </main>

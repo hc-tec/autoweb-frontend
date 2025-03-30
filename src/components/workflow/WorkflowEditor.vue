@@ -31,31 +31,32 @@
         />
       </template>
       
-      <Panel position="top-right" class="workflow-actions">
-        <a-button-group>
-          <a-button type="primary" @click="addNode">
-            <template #icon><plus-outlined /></template>
-            添加节点
-          </a-button>
-          <a-button type="primary" @click="addCompositeNode">
-            <template #icon><folder-outlined /></template>
-            添加嵌套节点
-          </a-button>
-          <a-button type="primary" @click="addSlotNode">
-            <template #icon><branches-outlined /></template>
-            添加条件节点
-          </a-button>
-          <a-button @click="autoLayout">
-            <template #icon><apartment-outlined /></template>
-            自动布局
-          </a-button>
-          <a-button @click="exportWorkflow">
-            <template #icon><export-outlined /></template>
-            导出
-          </a-button>
-        </a-button-group>
+      <!-- 操作提示 -->
+      <Panel position="bottom-right" class="workflow-tips">
+        <a-tooltip title="按Delete键删除选中的节点和连接线">
+          <a-tag color="blue">
+            <delete-outlined /> Delete键可删除选中元素
+          </a-tag>
+        </a-tooltip>
       </Panel>
     </VueFlow>
+    
+    <!-- 使用新的控制栏组件 -->
+    <WorkflowControlBar 
+      @add-node="handleAddNode"
+      @optimize-layout="autoLayout"
+      @run-workflow="runWorkflow"
+      @export-workflow="exportWorkflow"
+    />
+    
+    <!-- 节点属性面板 -->
+    <node-properties-panel
+      v-if="selectedNode"
+      :node="selectedNode"
+      :visible="showProperties"
+      @close="closePropertiesPanel"
+      @update-node="updateNodeProperties"
+    />
   </div>
 </template>
 
@@ -63,9 +64,12 @@
 import { ref, computed, watch, reactive, shallowRef, markRaw, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, Panel, useVueFlow } from '@vue-flow/core'
 import { PlusOutlined, ApartmentOutlined, ExportOutlined, FolderOutlined, BranchesOutlined, DeleteOutlined } from '@ant-design/icons-vue'
-import CustomNode from './CustomNode.vue'
-import CompositeNode from './CompositeNode.vue'
+import CustomNode from '../nodes/CustomNode.vue'
+import CompositeNode from '../nodes/CompositeNode.vue'
+import WorkflowControlBar from './WorkflowControlBar.vue'
+import NodePropertiesPanel from './NodePropertiesPanel.vue'
 import { saveWorkflowToJson } from '@/utils/workflowUtils'
+import { createNode, createNodeWithSlots, useNodeTypes } from '@/utils/nodeFactory'
 
 const props = defineProps({
   nodes: {
@@ -78,12 +82,16 @@ const props = defineProps({
   }
 })
 
-const { onNodeClick, onEdgeClick, addEdges, addNodes, setNodes, removeNodes, removeEdges, getSelectedNodes, getSelectedEdges } = useVueFlow();
-const emit = defineEmits(['nodeClick', 'edgeConnect', 'update:nodes', 'update:edges', 'elementsDeleted'])
+const { onNodeClick: onVueFlowNodeClick, onEdgeClick, addEdges, addNodes, setNodes, removeNodes, removeEdges, getSelectedNodes, getSelectedEdges } = useVueFlow();
+const emit = defineEmits(['nodeClick', 'edgeConnect', 'update:nodes', 'update:edges', 'elementsDeleted', 'updateNode'])
 
 // 创建本地响应式引用，用于v-model绑定
 const nodes = ref(props.nodes);
 const edges = ref(props.edges);
+
+// 节点属性面板相关状态
+const selectedNode = ref(null);
+const showProperties = ref(false);
 
 // 监听props变化，同步到本地ref
 watch(() => props.nodes, (newNodes) => {
@@ -104,9 +112,41 @@ const nodeTypes = shallowRef({
 const edgeTypes = shallowRef({
 
 })
-onNodeClick(() => {
 
+// 设置VueFlow的节点点击事件处理函数
+onVueFlowNodeClick((e) => {  
+  // 处理节点点击，显示属性面板
+  selectedNode.value = e.node;
+  showProperties.value = true;
+  
+  // 向父组件发射nodeClick事件
+  emit('nodeClick', e.event, e.node)
 })
+
+// 关闭属性面板
+const closePropertiesPanel = () => {
+  showProperties.value = false;
+  selectedNode.value = null;
+}
+
+// 更新节点属性
+const updateNodeProperties = (updatedNode) => {
+  // 更新节点
+  const nodeIndex = nodes.value.findIndex(node => node.id === updatedNode.id);
+  if (nodeIndex !== -1) {
+    // 创建节点的副本并更新
+    const updatedNodes = [...nodes.value];
+    updatedNodes[nodeIndex] = updatedNode;
+    nodes.value = updatedNodes;
+    
+    // 更新选中节点的引用
+    selectedNode.value = updatedNode;
+    
+    // 发送节点更新事件
+    emit('updateNode', updatedNode);
+  }
+}
+
 // 默认边选项 - 使用shallowRef减少深层响应式
 const defaultEdgeOptions = shallowRef({
   type: 'default',
@@ -154,241 +194,89 @@ const onConnect = (connection) => {
   addEdges([newEdge])
 }
 
-// 添加普通节点
-const addNode = () => {
-  // 创建唯一ID
-  const newNodeId = `node-${Date.now()}`
+// 处理添加节点事件
+const handleAddNode = async (type) => {
+  console.log('添加节点类型:', type)
   
-  // 确定新节点位置（相对于画布）
-  const position = { x: 100, y: 100 }
-  const existingNodes = nodes.value
-  
-  if (existingNodes.length > 0) {
-    // 新节点放在最右侧节点的右边
-    const rightmostNode = existingNodes.reduce((prev, current) => {
-      return (prev.position.x > current.position.x) ? prev : current
-    })
-    position.x = rightmostNode.position.x + 30
-    position.y = rightmostNode.position.y - 20
-  }
-  
-  // 定义新节点数据
-  const newNode = {
-    id: newNodeId,
-    type: 'custom',
-    position,
-    data: {
-      module_id: newNodeId,
-      module_type: 'custom',
-      position, // 保存位置信息
-      meta: {
-        title: '自定义节点',
-        description: '执行自定义操作',
-        category: 'default'
-      },
-      inputs: {
-        input_defs: [
-          {
-            name: 'input',
-            type: 'string',
-            description: '输入参数',
-            required: true
-          }
-        ]
-      },
-      outputs: {
-        output_defs: [
-          {
-            name: 'output',
-            type: 'string',
-            description: '输出结果'
-          }
-        ]
+  try {
+    // 获取当前选中的节点
+    const selectedNodes = getSelectedNodes.value
+    const parentNode = selectedNodes.length === 1 && selectedNodes[0].data.is_composited 
+      ? selectedNodes[0] 
+      : null
+    
+    // 确定新节点位置
+    let position = { x: 100, y: 100 }
+    
+    if (parentNode) {
+      // 如果有选中的嵌套父节点，放置在其内部
+      // 计算在父节点中的相对位置
+      position = { x: 100, y: 100 } // 相对于父节点的位置
+      
+      // 检查父节点内是否已有其他子节点
+      const childNodes = nodes.value.filter(node => node.parentNode === parentNode.id)
+      if (childNodes.length > 0) {
+        // 放在最后一个子节点的下方
+        const lastChild = childNodes.reduce((a, b) => 
+          a.position.y > b.position.y ? a : b
+        )
+        position.x = lastChild.position.x
+        position.y = lastChild.position.y + 80
       }
-    }
-  }
-  
-  // 添加节点到流程图
-  addNodes([newNode])
-}
-
-// 添加带slots的节点
-const addSlotNode = () => {
-  // 创建唯一ID
-  const newNodeId = `slotnode-${Date.now()}`
-  const slotCompositeId = `composite-${Date.now()}`
-  
-  // 确定新节点位置（相对于画布）
-  const position = { x: 100, y: 100 }
-  const slotPosition = { x: 100, y: 250 }
-  const existingNodes = nodes.value
-  
-  if (existingNodes.length > 0) {
-    // 新节点放在最右侧节点的右边
-    const rightmostNode = existingNodes.reduce((prev, current) => {
-      return (prev.position.x > current.position.x) ? prev : current
-    })
-    position.x = rightmostNode.position.x + 30
-    position.y = rightmostNode.position.y - 20
-    slotPosition.x = position.x
-    slotPosition.y = position.y + 150
-  }
-  
-  // 创建slot模块
-  const slotModule = {
-    id: slotCompositeId,
-    type: 'composite',
-    position: slotPosition,
-    data: {
-      module_id: slotCompositeId,
-      module_type: 'composite',
-      position: slotPosition,
-      meta: {
-        title: '条件分支-true',
-        description: '条件为真时执行',
-        category: 'composite'
-      },
-      inputs: {
-        input_defs: []
-      },
-      outputs: {
-        output_defs: []
-      }
-    }
-  }
-  
-  // 创建带slot的节点
-  const newNode = {
-    id: newNodeId,
-    type: 'custom',
-    position,
-    data: {
-      module_id: newNodeId,
-      module_type: 'custom',
-      position,
-      meta: {
-        title: '条件分支节点',
-        description: '包含条件分支的节点',
-        category: 'if-else'
-      },
-      inputs: {
-        input_defs: [
-          {
-            name: 'input',
-            type: 'string',
-            description: '输入参数',
-            required: true
-          }
-        ]
-      },
-      outputs: {
-        output_defs: [
-          {
-            name: 'output',
-            type: 'string',
-            description: '输出结果'
-          }
-        ]
-      },
-      slots: {
-        'if-else-true': {
-          module_id: slotCompositeId,
-          module_type: 'composite',
-          meta: {
-            title: '条件分支-true',
-            description: '条件为真时执行',
-            category: 'if-else'
-          },
-          inputs: {
-            input_defs: []
-          },
-          outputs: {
-            output_defs: []
-          }
+    } else {
+      // 没有选中嵌套节点，使用普通放置逻辑
+      const existingNodes = nodes.value
+      
+      if (existingNodes.length > 0) {
+        // 新节点放在最右侧节点的右边
+        const rightmostNode = existingNodes.reduce((prev, current) => {
+          // 只考虑顶层节点
+          if (current.parentNode) return prev
+          return (prev.position.x > current.position.x) ? prev : current
+        }, existingNodes[0])
+        
+        if (!rightmostNode.parentNode) { // 确保是顶层节点
+          position.x = rightmostNode.position.x + 150
+          position.y = rightmostNode.position.y
         }
       }
     }
-  }
-  
-  // 添加节点到流程图
-  addNodes([newNode, slotModule])
-  
-  // 添加slot连接
-  const slotEdge = {
-    id: `edge-${newNodeId}-to-${slotCompositeId}`,
-    source: newNodeId,
-    target: slotCompositeId,
-    sourceHandle: 'slot-if-else-true',
-    data: { slotName: 'if-else-true' }
-  }
-  
-  addEdges([slotEdge])
-}
-
-// 添加复合节点
-const addCompositeNode = () => {
-  // 创建唯一ID
-  const newNodeId = `composite-${Date.now()}`
-  
-  // 确定新节点位置
-  const position = { x: 100, y: 100 }
-  const existingNodes = nodes.value
-  
-  if (existingNodes.length > 0) {
-    // 新节点放在最右侧节点的右边
-    const rightmostNode = existingNodes.reduce((prev, current) => {
-      return (prev.position.x > current.position.x) ? prev : current
-    })
-    position.x = rightmostNode.position.x + 30
-    position.y = rightmostNode.position.y - 20
-  }
-  
-  
-  // 创建新的复合节点
-  const newNode = {
-    id: newNodeId,
-    type: 'composite',
-    position,
-    data: {
-      module_id: newNodeId,
-      module_type: 'composite',
-      position, // 保存位置信息
-      meta: {
-        title: '嵌套节点',
-        description: '可容纳子节点的嵌套容器',
-        category: 'composite'
-      },
-      inputs: {
-        input_defs: [
-          {
-            name: 'input-top',
-            type: 'string',
-            description: '顶部输入',
-            required: true
-          },
-          {
-            name: 'input-left',
-            type: 'string',
-            description: '左侧输入',
-            required: true
-          }
-        ]
-      },
-      outputs: {
-        output_defs: [
-          {
-            name: 'output',
-            type: 'any',
-            description: '处理结果输出'
-          }
-        ]
-      },
-      slots: [] // 初始化空的子节点列表
+    
+    // 判断是否是带插槽的节点类型
+    const hasSlots = ['selector', 'loop'].includes(type)
+    
+    if (hasSlots) {
+      // 创建带插槽的节点
+      const { node, slotNodes, edges } = await createNodeWithSlots(type, position)
+      
+      // 如果有父节点，设置parentNode属性
+      if (parentNode) {
+        node.parentNode = parentNode.id
+        node.extent = 'parent'
+        slotNodes.forEach(slotNode => {
+          slotNode.parentNode = parentNode.id
+          slotNode.extent = 'parent'
+        })
+      }
+      
+      // 添加节点和边到流程图
+      addNodes([node, ...slotNodes])
+      addEdges(edges)
+    } else {
+      // 创建普通节点
+      const node = await createNode(type, position)
+      
+      // 如果有父节点，设置parentNode属性
+      if (parentNode) {
+        node.parentNode = parentNode.id
+        node.extent = 'parent' // 限制在父节点内
+      }
+      
+      addNodes([node])
     }
+  } catch (error) {
+    console.error('创建节点失败:', error)
   }
-  
-  // 添加节点到流程图
-  addNodes([newNode])
 }
 
 // 自动调整节点布局
@@ -466,6 +354,20 @@ const deleteSelectedElements = () => {
     emit('elementsDeleted', { nodes: nodesToDelete, edges: edgesToDelete })
   }
 }
+
+// 运行工作流
+const runWorkflow = () => {
+  console.log('运行工作流')
+  
+  // 获取工作流数据
+  const workflowData = saveWorkflowToJson({
+    nodes: nodes.value,
+    edges: edges.value
+  })
+  
+  // 这里可以添加实际运行的逻辑
+  console.log('工作流数据:', workflowData)
+}
 </script>
 
 <style scoped>
@@ -487,5 +389,19 @@ const deleteSelectedElements = () => {
   margin: 10px;
   display: flex;
   gap: 5px;
+}
+
+/* 抽屉面板的自定义样式 - 从WorkflowEditorView移动过来 */
+:deep(.ant-drawer-title) {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+:deep(.ant-drawer-header) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+:deep(.ant-drawer-body) {
+  padding: 16px;
 }
 </style> 

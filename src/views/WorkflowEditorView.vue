@@ -6,34 +6,15 @@
       @nodeClick="onNodeClick"
       @edgeConnect="onEdgeConnect"
       @elementsDeleted="onElementsDeleted"
+      @updateNode="onUpdateNode"
     />
-    
-    <!-- 属性面板抽屉 -->
-    <a-drawer
-      :visible="showProperties"
-      :width="400"
-      placement="right"
-      :closable="true"
-      @close="closePropertiesPanel"
-      :title="selectedNodeTitle"
-      :getContainer="false"
-    >
-      <node-properties-panel
-        v-if="selectedNode"
-        :node="selectedNode"
-        :workflow-json="workflowJson"
-        @update:node="updateNodeProperties"
-      />
-      <a-empty v-else description="选择一个节点来查看属性" />
-    </a-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, shallowRef, onBeforeUnmount } from 'vue'
+import { ref, onMounted, computed, shallowRef } from 'vue'
 import { notification } from 'ant-design-vue'
 import WorkflowEditor from '@/components/workflow/WorkflowEditor.vue'
-import NodePropertiesPanel from '@/components/workflow/NodePropertiesPanel.vue'
 import { loadWorkflowFromJson } from '@/utils/workflowUtils'
 import '@/assets/workflow-styles.css'
 
@@ -41,13 +22,6 @@ import '@/assets/workflow-styles.css'
 const workflowJson = shallowRef(null)
 const nodes = ref([])
 const edges = ref([])
-const selectedNode = shallowRef(null)
-const showProperties = ref(false)
-
-// 计算属性获取选中节点标题，避免在模板中进行条件判断
-const selectedNodeTitle = computed(() => 
-  selectedNode.value ? '节点属性: ' + selectedNode.value.data.meta.title : '节点属性'
-)
 
 // 从JSON加载工作流
 const loadWorkflow = async () => {
@@ -78,52 +52,7 @@ const loadWorkflow = async () => {
 
 // 节点点击事件
 const onNodeClick = (event, node) => {
-  selectedNode.value = node
-  showProperties.value = true
-}
-
-// 关闭属性面板
-const closePropertiesPanel = () => {
-  showProperties.value = false
-}
-
-// 更新节点属性
-const updateNodeProperties = (nodeId, properties) => {
-  // 更新节点属性
-  const nodeIndex = nodes.value.findIndex(node => node.id === nodeId)
-  if (nodeIndex !== -1) {
-    // 创建节点的浅拷贝
-    const updatedNodes = [...nodes.value];
-    updatedNodes[nodeIndex] = {
-      ...updatedNodes[nodeIndex],
-      data: {
-        ...updatedNodes[nodeIndex].data,
-        ...properties
-      }
-    }
-    
-    nodes.value = updatedNodes;
-    
-    // 更新工作流JSON数据
-    if (workflowJson.value) {
-      const moduleIndex = workflowJson.value.modules.findIndex(
-        module => module.module_id === nodeId
-      )
-      if (moduleIndex !== -1) {
-        // 创建模块的浅拷贝
-        const updatedModules = [...workflowJson.value.modules];
-        updatedModules[moduleIndex] = {
-          ...updatedModules[moduleIndex],
-          ...properties
-        }
-        
-        workflowJson.value = {
-          ...workflowJson.value,
-          modules: updatedModules
-        }
-      }
-    }
-  }
+  console.log('节点点击:', node);
 }
 
 // 连接边事件
@@ -134,11 +63,61 @@ const onEdgeConnect = (newEdge) => {
 
 // 元素删除事件
 const onElementsDeleted = (deletedElements) => {
-  // 如果没有workflowJson数据，则不需要处理
-  if (!workflowJson.value) return;
+  console.log('元素删除:', deletedElements);
   
-  
+  // 更新工作流JSON
+  if (workflowJson.value) {
+    // 处理删除的节点
+    if (deletedElements.nodes.length > 0) {
+      const updatedModules = workflowJson.value.modules.filter(
+        module => !deletedElements.nodes.some(node => node.id === module.module_id)
+      );
+      
+      workflowJson.value = {
+        ...workflowJson.value,
+        modules: updatedModules
+      };
+    }
+    
+    // 处理删除的边
+    if (deletedElements.edges.length > 0) {
+      // 根据你的数据结构来更新连接信息
+    }
+  }
+}
 
+// 处理节点更新事件
+const onUpdateNode = (updatedNode) => {
+  // 更新工作流JSON
+  if (workflowJson.value && workflowJson.value.modules) {
+    const moduleIndex = workflowJson.value.modules.findIndex(
+      module => module.module_id === updatedNode.id
+    );
+    
+    if (moduleIndex !== -1) {
+      const updatedModules = [...workflowJson.value.modules];
+      // 将节点数据转换为工作流模块格式
+      updatedModules[moduleIndex] = {
+        ...updatedModules[moduleIndex],
+        ...convertNodeToModule(updatedNode)
+      };
+      
+      workflowJson.value = {
+        ...workflowJson.value,
+        modules: updatedModules
+      };
+    }
+  }
+}
+
+// 将节点数据转换为工作流模块格式的辅助函数
+const convertNodeToModule = (node) => {
+  // 根据你的具体数据结构进行转换
+  // 这里是一个示例实现
+  return {
+    module_id: node.id,
+    ...node.data
+  };
 }
 
 onMounted(() => {
@@ -147,8 +126,6 @@ onMounted(() => {
 </script>
 
 <style>
-
-
 .workflow-editor {
   height: 100vh;
   width: 100%;
@@ -176,5 +153,4 @@ onMounted(() => {
   width: 100%;
   overflow: visible;
 }
-
 </style> 

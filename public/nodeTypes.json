@@ -1,0 +1,472 @@
+[
+  {
+    "type": "llm",
+    "module_type": "LLMBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "大模型",
+      "description": "使用AI大模型处理内容",
+      "category": "ai",
+      "icon": "robot"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "prompt",
+          "type": "string",
+          "description": "提示词",
+          "required": true
+        },
+        {
+          "name": "temperature",
+          "type": "number",
+          "description": "温度参数",
+          "required": false
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": "模型输出内容"
+        },
+        {
+          "name": "error_msg",
+          "type": "string",
+          "description": "错误信息"
+        }
+      ]
+    }
+  },
+  {
+    "type": "web",
+    "module_type": "OpenPageBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "读取网页内容",
+      "description": "从网页获取内容",
+      "category": "web",
+      "icon": "global"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "page_url",
+          "type": "string",
+          "description": "要读取的网页URL",
+          "required": true
+        },
+        {
+          "name": "prompt",
+          "type": "string",
+          "description": "提示词",
+          "required": false
+        },
+        {
+          "name": "skip_cache",
+          "type": "boolean",
+          "description": "是否跳过缓存",
+          "required": false
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "description": "类型",
+          "required": false
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": "网页内容"
+        },
+        {
+          "name": "error_msg",
+          "type": "string",
+          "description": "错误信息"
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "description": "消息"
+        },
+        {
+          "name": "pdf_content",
+          "type": "string",
+          "description": "PDF内容"
+        }
+      ]
+    }
+  },
+  {
+    "type": "workflow",
+    "module_type": "composite",
+    "is_composited": true,
+    "meta": {
+      "title": "嵌套工作流",
+      "description": "可容纳子节点的嵌套容器",
+      "category": "composite",
+      "icon": "apartment"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "input",
+          "type": "string",
+          "description": "输入参数",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": "输出结果"
+        }
+      ]
+    }
+  },
+  {
+    "type": "selector",
+    "module_type": "IfElseBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "条件分支节点",
+      "description": "根据条件执行不同分支",
+      "category": "if-else",
+      "icon": "fork"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "condition",
+          "type": "boolean",
+          "description": "条件表达式",
+          "required": true
+        },
+        {
+          "name": "input",
+          "type": "string",
+          "description": "输入内容",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": "输出结果"
+        }
+      ]
+    },
+    "slots": {
+      "if-true": {
+        "title": "条件为真时执行",
+        "description": "当条件为真时执行的分支"
+      },
+      "if-false": {
+        "title": "条件为假时执行",
+        "description": "当条件为假时执行的分支"
+      }
+    }
+  },
+  {
+    "type": "loop",
+    "module_type": "LoopBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "循环节点",
+      "description": "重复执行指定操作",
+      "category": "loop",
+      "icon": "sync"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "items",
+          "type": "array",
+          "description": "要循环的数据项",
+          "required": true
+        },
+        {
+          "name": "max_iterations",
+          "type": "number",
+          "description": "最大循环次数",
+          "required": false
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "array",
+          "description": "循环结果集合"
+        }
+      ]
+    },
+    "slots": {
+      "body": {
+        "title": "循环体",
+        "description": "循环执行的内容"
+      }
+    }
+  },
+  {
+    "type": "code",
+    "module_type": "CodeBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "代码节点",
+      "description": "执行自定义代码",
+      "category": "code",
+      "icon": "code"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "input",
+          "type": "string",
+          "description": "输入数据",
+          "required": true
+        },
+        {
+          "name": "code",
+          "type": "string",
+          "description": "要执行的代码",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": "代码执行结果"
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "description": "错误信息"
+        }
+      ]
+    }
+  },
+  {
+    "type": "input",
+    "module_type": "InputBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "输入节点",
+      "description": "工作流输入数据",
+      "category": "input",
+      "icon": "import"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "default_value",
+          "type": "string",
+          "description": "默认值",
+          "required": false
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": "输入数据"
+        }
+      ]
+    }
+  },
+  {
+    "type": "output",
+    "module_type": "OutputBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "输出节点",
+      "description": "工作流输出数据",
+      "category": "output",
+      "icon": "export"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "input",
+          "type": "string",
+          "description": "输入数据",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": []
+    }
+  },
+  {
+    "type": "create_session",
+    "module_type": "CreateSessionBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "创建会话",
+      "description": "创建新的会话",
+      "category": "session",
+      "icon": "message"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "session_name",
+          "type": "string",
+          "description": "会话名称",
+          "required": false
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "session_id",
+          "type": "string",
+          "description": "会话ID"
+        }
+      ]
+    }
+  },
+  {
+    "type": "clear_context",
+    "module_type": "ClearContextBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "清除上下文",
+      "description": "清除会话上下文",
+      "category": "session",
+      "icon": "delete"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "session_id",
+          "type": "string",
+          "description": "会话ID",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "success",
+          "type": "boolean",
+          "description": "是否成功"
+        }
+      ]
+    }
+  },
+  {
+    "type": "sql",
+    "module_type": "SQLBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "SQL自定义",
+      "description": "执行SQL语句",
+      "category": "database",
+      "icon": "database"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "connection",
+          "type": "string",
+          "description": "数据库连接",
+          "required": true
+        },
+        {
+          "name": "sql",
+          "type": "string",
+          "description": "SQL语句",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "result",
+          "type": "array",
+          "description": "查询结果"
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "description": "错误信息"
+        }
+      ]
+    }
+  },
+  {
+    "type": "insert_data",
+    "module_type": "InsertDataBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "新增数据",
+      "description": "向数据库新增数据",
+      "category": "database",
+      "icon": "file-add"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "connection",
+          "type": "string",
+          "description": "数据库连接",
+          "required": true
+        },
+        {
+          "name": "table",
+          "type": "string",
+          "description": "表名",
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "description": "插入的数据",
+          "required": true
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "success",
+          "type": "boolean",
+          "description": "是否成功"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "description": "新记录ID"
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "description": "错误信息"
+        }
+      ]
+    }
+  }
+] 
