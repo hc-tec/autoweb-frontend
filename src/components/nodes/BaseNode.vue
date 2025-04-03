@@ -4,8 +4,10 @@
     :class="[`node-type-${nodeCategory}`, { selected }]"
   >
     <div class="node-header">
-      <div class="node-icon">
-        <slot name="icon">⚙️</slot>
+      <div class="node-icon-wrapper">
+        <slot name="icon">
+          <ModuleIcon :icon="iconName" :category="nodeCategory" />
+        </slot>
       </div>
       <div class="node-title">
         {{ title }}
@@ -67,6 +69,7 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { LinkOutlined, PlayCircleOutlined, MoreOutlined } from '@ant-design/icons-vue'
+import ModuleIcon from '@/components/common/ModuleIcon.vue'
 
 // 定义props
 const props = defineProps({
@@ -99,7 +102,12 @@ const outputs = computed(() => {
 
 // 计算节点类别
 const nodeCategory = computed(() => {
-  return 'default'
+  return props.data.meta?.category || 'default'
+})
+
+// 计算图标名称
+const iconName = computed(() => {
+  return props.data.meta?.icon || ''
 })
 </script>
 
@@ -139,16 +147,8 @@ const nodeCategory = computed(() => {
   border-top-right-radius: 8px;
 }
 
-.node-icon {
-  font-size: 18px;
+.node-icon-wrapper {
   margin-right: 10px;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e9e7ff;
 }
 
 .node-title {

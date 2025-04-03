@@ -13,13 +13,11 @@
               </a-tooltip>
             </div>
             
-            <!-- 参数输入组件 -->
-            <param-input
+            <!-- 参数输入组件 - 直接传递整个节点 -->
+            <param-input-factory
               :param="param"
               :value="getParamValue(param.name)"
-              :current-node-id="nodeId"
-              @update="(value) => updateParamValue(param.name, value)"
-              @clear-reference="() => clearReference(param.name)"
+              :node="props.node"
             />
           </div>
         </div>
@@ -30,7 +28,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import ParamInput from './ParamInput.vue';
+import ParamInputFactory from './param-inputs/ParamInputFactory.vue';
+import { isReferenceType } from './param-inputs/referenceUtils';
 
 const props = defineProps({
   node: {
@@ -39,13 +38,8 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update-param']);
-
 // 展开状态
 const activeKeys = ref(['inputs']);
-
-// 获取节点ID
-const nodeId = computed(() => props.node?.id || '');
 
 // 输入定义
 const inputDefinitions = computed(() => {
@@ -57,7 +51,7 @@ const inputDefinitions = computed(() => {
 
 // 标题行显示
 const headerTitle = computed(() => {
-  return `入参 (${inputDefinitions.value.length})`;
+  return `输入 (${inputDefinitions.value.length})`;
 });
 
 // 判断参数是否必填
@@ -75,19 +69,9 @@ const getParamValue = (paramName) => {
   const paramInfo = props.node.data.inputs.input_parameters.find(p => p.name === paramName);
   if (!paramInfo || !paramInfo.input || !paramInfo.input.value) {
     return null;
-  }
+  }  
   
   return paramInfo.input.value;
-};
-
-// 更新参数值
-const updateParamValue = (paramName, value) => {
-  emit('update-param', { paramName, value });
-};
-
-// 清除引用
-const clearReference = (paramName) => {
-  updateParamValue(paramName, null);
 };
 </script>
 
@@ -98,7 +82,7 @@ const clearReference = (paramName) => {
 }
 
 :deep(.ant-collapse-header) {
-  padding: 8px 16px !important;
+  padding: 8px 0;
   font-size: 14px;
   font-weight: 500;
 }
@@ -113,8 +97,9 @@ const clearReference = (paramName) => {
 
 .param-row {
   display: flex;
-  padding: 8px 16px;
-  align-items: center;
+  padding: 8px 0;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .param-row:last-child {

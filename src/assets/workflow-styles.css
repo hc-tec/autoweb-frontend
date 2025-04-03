@@ -83,8 +83,13 @@
 /* 优化: 使用transform, 避免hover时触发布局 */
 .vue-flow__handle:hover {
   background-color: #6f5bd5;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+}
+
+.autoweb-node:hover .vue-flow__handle {
+  width: 22px;
+  height: 22px;
 }
 
 /* 隐藏非关键UI元素 */

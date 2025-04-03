@@ -1,54 +1,14 @@
 [
   {
-    "type": "llm",
-    "module_type": "LLMBlock",
+    "module_type": "workflow",
     "is_composited": false,
+    "is_workflow_node": true,
+    "workflow_id": "zhihu_789",
     "meta": {
-      "title": "大模型",
-      "description": "使用AI大模型处理内容",
-      "category": "ai",
-      "icon": "robot"
-    },
-    "inputs": {
-      "input_defs": [
-        {
-          "name": "prompt",
-          "type": "string",
-          "description": "提示词",
-          "required": true
-        },
-        {
-          "name": "temperature",
-          "type": "number",
-          "description": "温度参数",
-          "required": false
-        }
-      ]
-    },
-    "outputs": {
-      "output_defs": [
-        {
-          "name": "output",
-          "type": "string",
-          "description": "模型输出内容"
-        },
-        {
-          "name": "error_msg",
-          "type": "string",
-          "description": "错误信息"
-        }
-      ]
-    }
-  },
-  {
-    "type": "web",
-    "module_type": "OpenPageBlock",
-    "is_composited": false,
-    "meta": {
-      "title": "读取网页内容",
-      "description": "从网页获取内容",
-      "category": "web",
-      "icon": "global"
+      "title": "知乎热榜",
+      "description": "工作流",
+      "category": "workflow",
+      "icon": "zhihu"
     },
     "inputs": {
       "input_defs": [
@@ -59,89 +19,224 @@
           "required": true
         },
         {
-          "name": "prompt",
-          "type": "string",
-          "description": "提示词",
-          "required": false
-        },
-        {
-          "name": "skip_cache",
+          "name": "fullscreen",
           "type": "boolean",
-          "description": "是否跳过缓存",
-          "required": false
-        },
-        {
-          "name": "type",
-          "type": "string",
-          "description": "类型",
+          "description": "是否全屏显示",
           "required": false
         }
-      ]
+      ],
+      "input_parameters": [
+            {
+                "name": "page_url",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": ""
+                    }
+                }
+            },
+            {
+                "name": "fullscreen",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": true
+                    }
+                }
+            }
+        ]
     },
     "outputs": {
       "output_defs": [
         {
-          "name": "output",
+          "name": "data",
           "type": "string",
-          "description": "网页内容"
-        },
-        {
-          "name": "error_msg",
-          "type": "string",
-          "description": "错误信息"
-        },
-        {
-          "name": "message",
-          "type": "string",
-          "description": "消息"
-        },
-        {
-          "name": "pdf_content",
-          "type": "string",
-          "description": "PDF内容"
+          "description": "代码执行结果"
         }
       ]
     }
   },
   {
-    "type": "workflow",
-    "module_type": "composite",
-    "is_composited": true,
+    "module_type": "workflow",
+    "is_composited": false,
+    "is_workflow_node": true,
+    "workflow_id": "kimi_bot",
     "meta": {
-      "title": "嵌套工作流",
-      "description": "可容纳子节点的嵌套容器",
-      "category": "composite",
-      "icon": "apartment"
+      "title": "Kimi机器人",
+      "description": "Kimi机器人",
+      "category": "workflow",
+      "icon": "group"
     },
     "inputs": {
       "input_defs": [
         {
-          "name": "input",
+          "name": "page_url",
           "type": "string",
-          "description": "输入参数",
+          "description": "要读取的网页URL",
           "required": true
+        },
+        {
+          "name": "fullscreen",
+          "type": "boolean",
+          "description": "是否全屏显示",
+          "required": false
         }
-      ]
+      ],
+      "input_parameters": [
+            {
+                "name": "page_url",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": ""
+                    }
+                }
+            },
+            {
+                "name": "fullscreen",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": true
+                    }
+                }
+            }
+        ]
     },
     "outputs": {
-      "output_defs": [
-        {
-          "name": "output",
-          "type": "string",
-          "description": "输出结果"
-        }
-      ]
+      "output_defs": []
     }
   },
   {
-    "type": "selector",
+    "module_type": "OpenPageBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "打开网页",
+      "description": "打开网页以获取网页内容",
+      "category": "basic",
+      "icon": "chrome"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "page_url",
+          "type": "string",
+          "description": "要读取的网页URL",
+          "required": true
+        },
+        {
+          "name": "fullscreen",
+          "type": "boolean",
+          "description": "是否全屏显示",
+          "required": false
+        }
+      ],
+      "input_parameters": [
+            {
+                "name": "page_url",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": ""
+                    }
+                }
+            },
+            {
+                "name": "fullscreen",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": true
+                    }
+                }
+            }
+        ]
+    },
+    "outputs": {
+      "output_defs": []
+    }
+  },
+  {
+    "module_type": "InputBlock",
+    "is_composited": false,
+    "meta": {
+      "title": "输入框",
+      "description": "给输入框输入文字",
+      "category": "basic",
+      "icon": "form"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "xpath",
+          "type": "string",
+          "description": "输入框的XPath",
+          "required": true
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "description": "要输入的文本",
+          "required": false
+        },
+        {
+            "name": "clear_first",
+            "type": "boolean",
+            "description": "是否先清空输入框",
+            "required": false
+        }
+      ],
+      "input_parameters": [
+            {
+                "name": "xpath",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": ""
+                    }
+                }
+            },
+            {
+                "name": "text",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": ""
+                    }
+                }
+            },
+            {
+                "name": "clear_first",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": true
+                    }
+                }
+            }
+        ]
+    },
+    "outputs": {
+      "output_defs": []
+    }
+  },
+  {
     "module_type": "IfElseBlock",
     "is_composited": false,
     "meta": {
       "title": "条件分支节点",
       "description": "根据条件执行不同分支",
-      "category": "if-else",
-      "icon": "fork"
+      "category": "basic",
+      "icon": "branches"
     },
     "inputs": {
       "input_defs": [
@@ -169,148 +264,230 @@
       ]
     },
     "slots": {
-      "if-true": {
-        "title": "条件为真时执行",
-        "description": "当条件为真时执行的分支"
-      },
-      "if-false": {
-        "title": "条件为假时执行",
-        "description": "当条件为假时执行的分支"
-      }
+      "if-true": {},
+      "if-false": {}
     }
   },
   {
-    "type": "loop",
-    "module_type": "LoopBlock",
+    "module_type": "loop",
     "is_composited": false,
     "meta": {
       "title": "循环节点",
       "description": "重复执行指定操作",
-      "category": "loop",
-      "icon": "sync"
+      "category": "basic",
+      "icon": "redo"
     },
     "inputs": {
-      "input_defs": [
-        {
-          "name": "items",
-          "type": "array",
-          "description": "要循环的数据项",
-          "required": true
-        },
-        {
-          "name": "max_iterations",
-          "type": "number",
-          "description": "最大循环次数",
-          "required": false
-        }
-      ]
+        "input_defs": [
+            {
+                "name": "array",
+                "type": "array",
+                "description": "要循环的数组",
+                "required": true
+            }
+        ],
+        "input_parameters": [
+            {
+                "name": "array",
+                "input": {
+                    "type": "array",
+                    "value": {
+                        "type": "literal",
+                        "content": []
+                    }
+                }
+            }
+        ]
     },
     "outputs": {
-      "output_defs": [
-        {
-          "name": "output",
-          "type": "array",
-          "description": "循环结果集合"
-        }
-      ]
+        "output_defs": [
+            {
+                "name": "iterations",
+                "type": "integer",
+                "description": "循环次数"
+            },
+            {
+                "name": "results",
+                "type": "array",
+                "description": "所有迭代的结果"
+            }
+        ]
     },
     "slots": {
-      "body": {
-        "title": "循环体",
-        "description": "循环执行的内容"
-      }
+      "loop_body": {
+            "module_type": "slot",
+            "meta": {
+                "title": "循环体",
+                "description": "循环体",
+                "category": "loop_body"
+            },
+            "inputs": {},
+            "outputs": {
+                "output_defs": [
+                    {
+                        "name": "index",
+                        "type": "integer",
+                        "description": "当前循环索引"
+                    },
+                    {
+                        "name": "item",
+                        "type": "object",
+                        "description": "当前循环项"
+                    }
+                ]
+            }
+        }
     }
   },
   {
-    "type": "code",
-    "module_type": "CodeBlock",
+    "module_type": "python_code",
     "is_composited": false,
     "meta": {
       "title": "代码节点",
       "description": "执行自定义代码",
-      "category": "code",
+      "category": "basic",
       "icon": "code"
     },
     "inputs": {
-      "input_defs": [
-        {
-          "name": "input",
-          "type": "string",
-          "description": "输入数据",
-          "required": true
-        },
-        {
-          "name": "code",
-          "type": "string",
-          "description": "要执行的代码",
-          "required": true
-        }
-      ]
+      "input_defs": []
     },
     "outputs": {
       "output_defs": [
         {
-          "name": "output",
+          "name": "data",
           "type": "string",
           "description": "代码执行结果"
-        },
-        {
-          "name": "error",
-          "type": "string",
-          "description": "错误信息"
         }
       ]
+    },
+    "code": {
+        "python_code": ""
     }
   },
   {
-    "type": "input",
-    "module_type": "InputBlock",
+    "module_type": "ExtractDataBlock",
     "is_composited": false,
     "meta": {
-      "title": "输入节点",
-      "description": "工作流输入数据",
-      "category": "input",
-      "icon": "import"
+      "title": "提取字段",
+      "description": "根据xpath从网页中提取字段",
+      "category": "basic",
+      "icon": "select"
     },
     "inputs": {
       "input_defs": [
         {
-          "name": "default_value",
-          "type": "string",
-          "description": "默认值",
-          "required": false
+          "name": "fields",
+          "type": "array",
+          "description": "要提取的xpath列表",
+          "required": true
+        },
+        {
+            "name": "use_relative_xpath",
+            "type": "boolean",
+            "description": "是否使用相对XPath",
+            "required": false
+        },
+        {
+            "name": "export_to_excel",
+            "type": "boolean",
+            "description": "是否导出到Excel",
+            "required": false
         }
-      ]
+      ],
+      "input_parameters": [
+            {
+                "name": "fields",
+                "input": {
+                    "type": "array",
+                    "value": {
+                        "type": "reference",
+                        "content": []
+                    }
+                }
+            },
+            {
+                "name": "use_relative_xpath",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": false
+                    }
+                }
+            },
+            {
+                "name": "export_to_excel",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": false
+                    }
+                }
+            }
+        ]
     },
     "outputs": {
       "output_defs": [
         {
-          "name": "output",
-          "type": "string",
-          "description": "输入数据"
+          "name": "results",
+          "type": "array",
+          "description": "提取的数据结果"
+        },
+        {
+            "name": "result_count",
+            "type": "integer",
+            "description": "提取的数据数量"
         }
       ]
     }
   },
   {
-    "type": "output",
-    "module_type": "OutputBlock",
+    "module_type": "ClickElementBlock",
     "is_composited": false,
     "meta": {
-      "title": "输出节点",
-      "description": "工作流输出数据",
-      "category": "output",
-      "icon": "export"
+      "title": "点击元素",
+      "description": "点击元素",
+      "category": "basic",
+      "icon": "aim"
     },
     "inputs": {
       "input_defs": [
         {
-          "name": "input",
+          "name": "xpath",
           "type": "string",
-          "description": "输入数据",
+          "description": "要点击元素的XPath",
           "required": true
-        }
-      ]
+        },
+        {
+            "name": "need_track",
+            "type": "boolean",
+            "description": "是否跟踪页面变化",
+            "required": true
+          }
+      ],
+      "input_parameters": [
+            {
+                "name": "xpath",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": ""
+                    }
+                }
+            },
+            {
+                "name": "need_track",
+                "input": {
+                    "type": "boolean",
+                    "value": {
+                        "type": "literal",
+                        "content": true
+                    }
+                }
+            }
+        ]
     },
     "outputs": {
       "output_defs": []
@@ -384,7 +561,7 @@
       "title": "SQL自定义",
       "description": "执行SQL语句",
       "category": "database",
-      "icon": "database"
+      "icon": "console"
     },
     "inputs": {
       "input_defs": [
@@ -467,6 +644,40 @@
           "description": "错误信息"
         }
       ]
+    }
+  },
+  {
+    "module_type": "DynamicInputNode",
+    "is_composited": false,
+    "meta": {
+      "title": "动态输入节点",
+      "description": "自定义输入参数，输出与输入相同",
+      "category": "basic",
+      "icon": "import"
+    },
+    "inputs": {
+      "input_defs": [],
+      "input_parameters": []
+    },
+    "outputs": {
+      "output_defs": []
+    }
+  },
+  {
+    "module_type": "DynamicOutputNode",
+    "is_composited": false,
+    "meta": {
+      "title": "动态输出节点",
+      "description": "作为工作流输出节点，接收上游节点的输入作为工作流输出",
+      "category": "basic",
+      "icon": "export"
+    },
+    "inputs": {
+      "input_defs": [],
+      "input_parameters": []
+    },
+    "outputs": {
+      "output_defs": []
     }
   }
 ] 

@@ -1,55 +1,20 @@
 {
-  "version": "1.0.0",
-  "module_id": "workflow_1743702871279",
-  "module_type": "workflow",
+  "module_id": "workflow_1743625555303",
+  "module_type": "composite",
   "is_composited": false,
+  "meta": {
+    "title": "知乎热榜",
+      "description": "工作流",
+      "category": "workflow",
+      "icon": "zhihu"
+  },
+  "inputs": {
+    "input_defs": []
+  },
+  "outputs": {
+    "output_defs": []
+  },
   "modules": [
-    {
-      "module_id": "DynamicInputNode-1743697749348",
-      "module_type": "DynamicInputNode",
-      "is_composited": false,
-      "meta": {
-        "title": "动态输入节点",
-        "description": "自定义输入参数，输出与输入相同",
-        "category": "basic",
-        "icon": "import"
-      },
-      "inputs": {
-        "input_defs": [
-          {
-            "name": "test",
-            "type": "string",
-            "description": "",
-            "required": false
-          }
-        ],
-        "input_parameters": [
-          {
-            "name": "test",
-            "input": {
-              "type": "string",
-              "value": {
-                "type": "literal",
-                "content": "123"
-              }
-            }
-          }
-        ]
-      },
-      "outputs": {
-        "output_defs": [
-          {
-            "name": "test",
-            "type": "string",
-            "description": ""
-          }
-        ]
-      },
-      "position": {
-        "x": 582.2403567136514,
-        "y": 181.43706718839445
-      }
-    },
     {
       "module_id": "OpenPageBlock-1743526685030",
       "module_type": "OpenPageBlock",
@@ -343,7 +308,7 @@
                   {
                     "name": "fields",
                     "input": {
-                      "type": "array",
+                      "type":"array",
                       "value": {
                         "type": "reference",
                         "content": [
@@ -619,169 +584,7 @@
             }
           ]
         }
-      },
-      "schema": {
-        "outputs": {
-          "results": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    {
-      "module_id": "DynamicOutputNode-1743697749582",
-      "module_type": "DynamicOutputNode",
-      "is_composited": false,
-      "meta": {
-        "title": "动态输出节点",
-        "description": "作为工作流输出节点，接收上游节点的输入作为工作流输出",
-        "category": "basic",
-        "icon": "export"
-      },
-      "inputs": {
-        "input_defs": [
-          {
-            "name": "output",
-            "type": "array",
-            "description": "",
-            "required": false,
-            "default": {
-              "type": "reference",
-              "content": {
-                "moduleID": "loop-1743526797077",
-                "nodeTitle": "循环遍历30个热榜",
-                "moduleType": "loop",
-                "name": "results",
-                "path": "results",
-                "isArrayItem": false,
-                "isArray": true,
-                "source": "block-output"
-              }
-            }
-          },
-          {
-            "name": "count",
-            "type": "integer",
-            "description": "",
-            "required": false,
-            "default": {
-              "type": "reference",
-              "content": {
-                "moduleID": "loop-1743526797077",
-                "nodeTitle": "循环遍历30个热榜",
-                "moduleType": "loop",
-                "name": "iterations",
-                "path": "iterations",
-                "isArrayItem": false,
-                "isArray": false,
-                "source": "block-output"
-              }
-            }
-          }
-        ],
-        "input_parameters": [
-          {
-            "name": "output",
-            "input": {
-              "type": "array",
-              "value": {
-                "type": "reference",
-                "content": {
-                  "moduleID": "loop-1743526797077",
-                  "nodeTitle": "循环遍历30个热榜",
-                  "moduleType": "loop",
-                  "name": "results",
-                  "path": "results",
-                  "isArrayItem": false,
-                  "isArray": true,
-                  "source": "block-output"
-                }
-              }
-            }
-          },
-          {
-            "name": "count",
-            "input": {
-              "type": "integer",
-              "value": {
-                "type": "reference",
-                "content": {
-                  "moduleID": "loop-1743526797077",
-                  "nodeTitle": "循环遍历30个热榜",
-                  "moduleType": "loop",
-                  "name": "iterations",
-                  "path": "iterations",
-                  "isArrayItem": false,
-                  "isArray": false,
-                  "source": "block-output"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "outputs": {
-        "output_defs": [
-          {
-            "name": "output",
-            "type": "array",
-            "description": ""
-          },
-          {
-            "name": "count",
-            "type": "integer",
-            "description": ""
-          }
-        ]
-      },
-      "position": {
-        "x": 732.2403567136514,
-        "y": 181.43706718839445
       }
     }
-  ],
-  "meta": {
-    "title": "知乎热榜",
-    "description": "获取知乎热榜30条数据，包含排序、标题和热度数据",
-    "category": "custom"
-  },
-  "inputs": {
-    "input_defs": [
-      {
-        "name": "test",
-        "type": "string",
-        "description": "",
-        "required": false
-      }
-    ],
-    "input_parameters": [
-      {
-        "name": "test",
-        "input": {
-          "type": "string",
-          "value": {
-            "type": "literal",
-            "content": "123"
-          }
-        }
-      }
-    ]
-  },
-  "outputs": {
-    "output_defs": [
-      {
-        "name": "output",
-        "type": "array",
-        "description": ""
-      },
-      {
-        "name": "count",
-        "type": "integer",
-        "description": ""
-      }
-    ]
-  }
+  ]
 }

@@ -43,10 +43,10 @@
     <div class="add-node-button">
       <a-dropdown 
         :trigger="['hover']" 
-        :visible="dropdownVisible" 
-        :placement="'bottomCenter'" 
+        :open="dropdownVisible" 
+        :placement="'bottom'" 
         overlayClassName="node-dropdown"
-        @visibleChange="handleDropdownVisibleChange">
+        @openChange="handleDropdownVisibleChange">
         <a-button>
           <template #icon><plus-outlined /></template>
           添加节点
@@ -162,7 +162,7 @@ const hideNodeDropdown = () => {
 // 处理节点选择
 const handleNodeSelect = (nodeType) => {
   addNodeType(nodeType);
-  hideNodeDropdown();
+  showNodeDropdown()
 }
 
 // 处理节点搜索

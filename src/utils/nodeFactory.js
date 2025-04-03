@@ -53,11 +53,180 @@ export async function loadNodeTypes() {
 /**
  * 根据类型查找节点定义
  * @param {string} type 节点类型
+ * @param {string} workflowId 工作流ID（可选）
  * @returns {Promise<Object|null>} 节点类型定义
  */
-export async function findNodeTypeDefinition(type) {
+export async function findNodeTypeDefinition(type, workflowId) {
   const nodeTypes = await loadNodeTypes()
-  return nodeTypes.find(nt => nt.type === type) || null
+  
+  // 如果提供了workflowId，说明是查找特定工作流节点
+  if (workflowId) {
+    return nodeTypes.find(nt => 
+      nt.module_type === type && 
+      nt.workflow_id === workflowId
+    ) || null
+  }
+  
+  // 普通查找
+  return nodeTypes.find(nt => nt.module_type === type) || null
+}
+
+// 节点创建器 - 处理基本节点创建逻辑
+class NodeBuilder {
+  /**
+   * 创建基础节点
+   * @param {string} type 节点类型
+   * @param {Object} position 节点位置
+   * @param {Object} customData 自定义数据
+   * @returns {Promise<Object>} 创建的节点
+   */
+  static async createBaseNode(type, position, customData = {}) {
+    // 处理可能的workflow_id
+    const workflowId = customData.workflow_id;
+    
+    // 使用工作流ID查找节点定义
+    const nodeDef = await findNodeTypeDefinition(type, workflowId);
+    
+    if (!nodeDef) {
+      throw new Error(`未找到类型为 ${type} ${workflowId ? `(工作流ID: ${workflowId})` : ''} 的节点定义`);
+    }
+
+    const nodeId = `${type}-${Date.now()}`;
+    const nodeData = {
+      module_id: nodeId,
+      module_type: nodeDef.module_type,
+      is_composited: nodeDef.is_composited,
+      meta: { ...nodeDef.meta },
+      inputs: JSON.parse(JSON.stringify(nodeDef.inputs)),
+      outputs: JSON.parse(JSON.stringify(nodeDef.outputs)),
+      position: { ...position },
+      ...customData  // 确保customData在最后，以覆盖上面的默认值
+    };
+
+    // 对于workflow类型的节点，确保workflow_id存在
+    if (nodeDef.module_type === 'workflow') {
+      // 如果nodeDef中有workflow_id，优先使用它
+      nodeData.workflow_id = nodeData.workflow_id || nodeDef.workflow_id;
+      nodeData.is_workflow_node = true;
+    }
+
+    // 确定节点的视觉类型 - workflow类型节点也使用custom视图
+    const nodeType = nodeDef.is_composited ? 'composite' : 'custom';
+
+    return {
+      id: nodeId,
+      type: nodeType,
+      position,
+      expandParent: true,
+      data: nodeData,
+      nodeDef
+    };
+  }
+}
+
+// 插槽处理器 - 专门处理节点插槽相关逻辑
+class SlotProcessor {
+  /**
+   * 处理节点插槽
+   * @param {Object} node 主节点
+   * @param {Object} nodeDef 节点定义
+   * @returns {Object} 包含插槽节点和连接边的对象
+   */
+  static processNodeSlots(node, nodeDef) {
+    if (!nodeDef || !nodeDef.slots) {
+      return { slotNodes: [], edges: [] }
+    }
+
+    const slotNodes = []
+    const edges = []
+    const position = node.position
+    const slotNames = Object.keys(nodeDef.slots)
+
+    // 为节点添加插槽数据
+    node.data.slots = {}
+    slotNames.forEach(slotName => {
+      node.data.slots[slotName] = this._createSlotData(slotName, nodeDef.slots[slotName])
+    })
+
+    // 创建插槽节点和连接边
+    slotNames.forEach((slotName, index) => {
+      const slotPosition = this._calculateSlotPosition(position, index, slotNames.length)
+      const slotNode = this._createSlotNode(node, slotName, slotPosition)
+      slotNodes.push(slotNode)
+
+      const edge = this._createSlotEdge(node.id, slotNode.id, slotName)
+      edges.push(edge)
+    })
+
+    return { slotNodes, edges }
+  }
+
+  /**
+   * 创建插槽数据
+   * @private
+   */
+  static _createSlotData(slotName, slotDef) {
+    // 确保插槽子模块的is_composited为true
+    return {
+      module_id: `slot-${slotName}-${Date.now()}`,
+      module_type: 'slot', // 固定为slot类型
+      is_composited: true, // 插槽模块始终为嵌套类型
+      meta: {
+        title: slotDef.meta?.title || `${slotName} 插槽`,
+        description: slotDef.meta?.description || `${slotName} 插槽`,
+        category: slotDef.meta?.category || 'slot'
+      },
+      inputs: slotDef.inputs || { input_defs: [] },
+      outputs: slotDef.outputs || { output_defs: [] }
+    }
+  }
+
+  /**
+   * 计算插槽节点位置
+   * @private
+   */
+  static _calculateSlotPosition(parentPosition, index, totalSlots) {
+    const slotX = parentPosition.x + (index - totalSlots / 2 + 0.5) * 150
+    const slotY = parentPosition.y + 150
+    return { x: slotX, y: slotY }
+  }
+
+  /**
+   * 创建插槽节点
+   * @private
+   */
+  static _createSlotNode(parentNode, slotName, position) {
+    if (!parentNode.data.slots[slotName]) {
+      throw new Error(`插槽 ${slotName} 不存在于节点中`)
+    }
+
+    const slotData = parentNode.data.slots[slotName]
+    // 创建插槽节点
+    return {
+      id: slotData.module_id,
+      type: 'composite', // 插槽节点应该是嵌套类型
+      position,
+      expandParent: true,
+      data: {
+        ...slotData,
+        position
+      }
+    }
+  }
+
+  /**
+   * 创建插槽连接边
+   * @private
+   */
+  static _createSlotEdge(sourceId, targetId, slotName) {
+    return {
+      id: `edge-${sourceId}-to-${targetId}`,
+      source: sourceId,
+      target: targetId,
+      sourceHandle: `slot-${slotName}`,
+      data: { slotName }
+    }
+  }
 }
 
 /**
@@ -68,87 +237,49 @@ export async function findNodeTypeDefinition(type) {
  * @returns {Promise<Object>} 创建的节点
  */
 export async function createNode(type, position = { x: 100, y: 100 }, customData = {}) {
-  // 获取节点类型定义
-  const nodeDef = await findNodeTypeDefinition(type)
-  if (!nodeDef) {
-    throw new Error(`未找到类型为 ${type} 的节点定义`)
-  }
-
-  // 创建唯一ID
-  const nodeId = `${type}-${Date.now()}`
+  const { id, type: nodeType, position: nodePosition, data, nodeDef } = 
+    await NodeBuilder.createBaseNode(type, position, customData)
   
-  // 构建节点数据
-  const nodeData = {
-    module_id: nodeId,
-    module_type: nodeDef.module_type,
-    is_composited: nodeDef.is_composited,
-    meta: { ...nodeDef.meta },
-    inputs: JSON.parse(JSON.stringify(nodeDef.inputs)),
-    outputs: JSON.parse(JSON.stringify(nodeDef.outputs)),
-    position: { ...position },
-    ...customData
-  }
-  
-  // 如果有插槽定义，添加插槽数据
+  // 处理插槽（如果有）
   if (nodeDef.slots) {
-    nodeData.slots = {}
-    Object.keys(nodeDef.slots).forEach(slotName => {
-      nodeData.slots[slotName] = {
-        module_id: `slot-${slotName}-${Date.now()}`,
-        module_type: 'slot',
-        is_composited: true,
-        meta: {
-          title: nodeDef.slots[slotName].title,
-          description: nodeDef.slots[slotName].description,
-          category: 'slot'
-        },
-        inputs: {
-          input_defs: []
-        },
-        outputs: {
-          output_defs: []
-        }
-      }
-    })
+    SlotProcessor.processNodeSlots({ id, data, position }, nodeDef)
   }
   
   // 创建Vue Flow节点格式
-  const node = {
-    id: nodeId,
-    type: nodeDef.is_composited ? 'composite' : 'custom',
-    position,
-    data: nodeData
+  return {
+    id,
+    type: nodeType, // 使用从节点定义中获取的类型
+    position: nodePosition,
+    expandParent: true,
+    data
   }
-  
-  return node
 }
 
 /**
- * 为一个节点创建插槽节点
- * @param {Object} parentNode 父节点
- * @param {string} slotName 插槽名称
+ * 创建节点和它的插槽节点
+ * @param {string} type 节点类型
  * @param {Object} position 节点位置
- * @returns {Object} 插槽节点
+ * @param {Object} customData 自定义数据
+ * @returns {Promise<Object>} 包含节点和边的对象 { node, slotNodes, edges }
  */
-export function createSlotNode(parentNode, slotName, position = { x: 100, y: 150 }) {
-  if (!parentNode || !parentNode.data || !parentNode.data.slots || !parentNode.data.slots[slotName]) {
-    throw new Error(`无效的父节点或插槽名称: ${slotName}`)
-  }
+export async function createNodeWithSlots(type, position = { x: 100, y: 100 }, customData = {}) {
+  // 创建基础节点
+  const { id, type: nodeType, position: nodePosition, data, nodeDef } = 
+    await NodeBuilder.createBaseNode(type, position, customData)
   
-  const slotData = parentNode.data.slots[slotName]
-  const slotNodeId = slotData.module_id
-  
-  const slotNode = {
-    id: slotNodeId,
-    type: 'slot',
+  // 组装节点对象 - 使用正确的节点类型
+  const node = {
+    id,
+    type: nodeType, // 使用从节点定义中获取的类型，而不是硬编码为"custom"
     position,
-    data: {
-      ...slotData,
-      position
-    }
+    expandParent: true,
+    data
   }
   
-  return slotNode
+  // 处理插槽
+  const { slotNodes, edges } = SlotProcessor.processNodeSlots(node, nodeDef)
+  
+  return { node, slotNodes, edges }
 }
 
 /**
@@ -179,52 +310,6 @@ export function createEdge(sourceId, targetId, sourceHandle = null, targetHandle
   }
   
   return edge
-}
-
-/**
- * 创建节点和它的插槽节点
- * @param {string} type 节点类型
- * @param {Object} position 节点位置
- * @param {Object} customData 自定义数据
- * @returns {Promise<Object>} 包含节点和边的对象 { node, slotNodes, edges }
- */
-export async function createNodeWithSlots(type, position = { x: 100, y: 100 }, customData = {}) {
-  // 创建主节点
-  const node = await createNode(type, position, customData)
-  const slotNodes = []
-  const edges = []
-  
-  // 获取节点类型定义
-  const nodeDef = await findNodeTypeDefinition(type)
-  if (!nodeDef || !nodeDef.slots) {
-    return { node, slotNodes, edges }
-  }
-  
-  // 计算插槽节点位置
-  const slotNames = Object.keys(nodeDef.slots)
-  slotNames.forEach((slotName, index) => {
-    // 计算插槽节点位置 - 如果有多个插槽，则水平排列
-    const slotX = position.x + (index - slotNames.length / 2 + 0.5) * 150
-    const slotY = position.y + 150
-    
-    const slotPosition = { x: slotX, y: slotY }
-    
-    // 创建插槽节点
-    const slotNode = createSlotNode(node, slotName, slotPosition)
-    slotNodes.push(slotNode)
-    
-    // 创建连接边
-    const edge = createEdge(
-      node.id, 
-      slotNode.id, 
-      `slot-${slotName}`, 
-      null, 
-      { slotName }
-    )
-    edges.push(edge)
-  })
-  
-  return { node, slotNodes, edges }
 }
 
 /**

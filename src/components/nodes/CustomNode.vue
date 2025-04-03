@@ -4,11 +4,6 @@
     :data="data"
     :selected="selected"
   >
-    <!-- 图标插槽 -->
-    <template #icon>
-      {{ nodeIcon }}
-    </template>
-    
     <!-- 操作按钮插槽 -->
     <template #actions>
       <a-button type="text" size="small" class="action-button">
@@ -78,34 +73,6 @@ const props = defineProps({
 
 // Vue Flow的hooks
 const { getEdges } = useVueFlow();
-
-// 优化3: 缓存节点图标，减少每次渲染时的计算
-const nodeIcon = computed(() => {
-  const category = props.data.meta?.category || '';
-  const type = props.data.module_type || '';
-  
-  // 根据分类返回图标
-  switch (category) {
-    case 'web':
-      return '🌐';
-    case 'ai':
-      return '🧠';
-    case 'audio':
-      return '🔊';
-    case 'start':
-      return '🚀';
-    default:
-      // 如果没有分类，尝试根据类型判断
-      if (type.includes('Page') || type.includes('Web')) {
-        return '🌐';
-      } else if (type.includes('Extract') || type.includes('Data')) {
-        return '📊';
-      } else if (type.includes('Click') || type.includes('Action')) {
-        return '👆';
-      }
-      return '⚙️'; // 默认图标
-  }
-})
 
 // 检查是否有slots
 const hasSlots = computed(() => {

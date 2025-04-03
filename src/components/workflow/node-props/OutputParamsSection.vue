@@ -32,12 +32,19 @@
         </div>
       </a-collapse-panel>
     </a-collapse>
+    
+    <!-- 通用schema编辑器 - 对所有有输出的节点显示 -->
+    <node-schema-editor 
+      v-if="hasOutputs"
+      :node="props.node"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import { ExpandOutlined } from '@ant-design/icons-vue';
+import NodeSchemaEditor from './NodeSchemaEditor.vue';
 
 const props = defineProps({
   node: {
@@ -59,7 +66,12 @@ const outputDefinitions = computed(() => {
 
 // 标题行显示
 const headerTitle = computed(() => {
-  return `出参 (${outputDefinitions.value.length})`;
+  return `输出 (${outputDefinitions.value.length})`;
+});
+
+// 判断节点是否有输出
+const hasOutputs = computed(() => {
+  return outputDefinitions.value.length > 0;
 });
 </script>
 
@@ -70,7 +82,7 @@ const headerTitle = computed(() => {
 }
 
 :deep(.ant-collapse-header) {
-  padding: 8px 16px !important;
+  padding: 8px 0;
   font-size: 14px;
   font-weight: 500;
 }
@@ -85,8 +97,8 @@ const headerTitle = computed(() => {
 
 .param-row {
   display: flex;
-  padding: 8px 16px;
-  align-items: center;
+  padding: 8px 0;
+  align-items: flex-start;
 }
 
 .param-row:last-child {
@@ -107,7 +119,7 @@ const headerTitle = computed(() => {
 .param-value {
   flex: 2;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .param-type {

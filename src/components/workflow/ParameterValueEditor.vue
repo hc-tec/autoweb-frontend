@@ -9,7 +9,7 @@
       />
     </div>
     
-    <div v-else-if="parameterType === 'number'" class="coze-input-wrapper">
+    <div v-else-if="parameterType === 'integer'" class="coze-input-wrapper">
       <a-input-number
         v-model:value="localValue"
         style="width: 100%"
@@ -104,7 +104,7 @@ const getValue = () => {
   // 根据类型返回默认值
   switch (props.parameterType) {
     case 'string': return ''
-    case 'number': return 0
+    case 'integer': return 0
     case 'boolean': return false
     case 'array': return []
     case 'object': return {}

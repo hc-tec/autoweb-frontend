@@ -8,14 +8,11 @@
   >
     <!-- 图标插槽 -->
     <template #icon>
-      <BoxPlotOutlined />
+      <ModuleIcon icon="box-plot" category="composite" />
     </template>
     
     <!-- 操作按钮插槽 -->
     <template #actions>
-      <a-button type="text" size="small" class="action-button" @click="addChildNode">
-        <plus-outlined />
-      </a-button>
       <a-button type="text" size="small" class="action-button">
         <more-outlined />
       </a-button>
@@ -25,8 +22,8 @@
     <div class="composite-node-content">
       <div ref="nodeContainer" class="child-nodes-container">
         <div class="empty-container-hint">
-          <BlockOutlined />
-          <span>点击"+"按钮添加子节点</span>
+          <ModuleIcon icon="block" category="composite" />
+          <span>选中节点，点击下面"添加节点"按钮添加子节点</span>
         </div>
         <slot></slot>
       </div>
@@ -64,11 +61,12 @@
 <script setup>
 import { Handle, useNodesData, useNodeId } from '@vue-flow/core'
 import { computed, onMounted, watch, ref, reactive } from 'vue'
-import { MoreOutlined, PlusOutlined, BoxPlotOutlined, BlockOutlined } from '@ant-design/icons-vue'
+import { MoreOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import { useVueFlow } from '@vue-flow/core'
 import BaseNode from './BaseNode.vue'
 import { NodeResizer } from '@vue-flow/node-resizer'
 import '@vue-flow/node-resizer/dist/style.css'
+import ModuleIcon from '@/components/common/ModuleIcon.vue'
 // 定义props
 const props = defineProps({
   id: {
@@ -103,67 +101,6 @@ const parentDimensions = reactive({
     width: 400,
     height: 300
 })
-
-// 添加子节点的方法
-const addChildNode = (event) => {
-  // 获取当前节点
-  const parentNode = findNode(props.id)
-  if (!parentNode) return
-  
-  event.stopPropagation()
-  
-  // 计算新节点位置
-  let posX, posY
-
-  posX = parentNode.dimensions.width
-  posY = parentNode.dimensions.height - 200
-  
-  // 生成唯一ID
-  const newNodeId = `child-${props.id}-${Date.now()}`
-  
-  // 创建新节点
-  const newNode = {
-    id: newNodeId,
-    type: 'custom',
-    position: { x: posX, y: posY },
-    parentNode: props.id,
-    expandParent: true,
-    extent: 'parent',
-    data: {
-      module_id: newNodeId,
-      module_type: 'custom',
-      // 保存相对于父节点的位置信息
-      position: { x: posX, y: posY },
-      meta: {
-        title: '选择器',
-        description: '判断条件分支',
-        category: 'default'
-      },
-      inputs: {
-        input_defs: [
-          {
-            name: 'input',
-            type: 'string',
-            description: '输入参数',
-            required: true
-          }
-        ]
-      },
-      outputs: {
-        output_defs: [
-          {
-            name: 'output',
-            type: 'string',
-            description: '输出结果'
-          }
-        ]
-      }
-    }
-  }
-  
-  // 添加节点
-  addNodes([newNode])
-}
 </script>
 
 <style scoped>

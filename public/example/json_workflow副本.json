@@ -1,0 +1,589 @@
+{
+    "module_id": "workflow_1743625555303",
+    "module_type": "composite",
+    "is_composited": true,
+    "meta": {
+      "title": "工作流",
+      "description": "自动生成的工作流",
+      "category": "custom"
+    },
+    "inputs": {
+      "input_defs": []
+    },
+    "outputs": {
+      "output_defs": []
+    },
+    "modules": [
+      {
+        "module_id": "OpenPageBlock-1743526685030",
+        "module_type": "OpenPageBlock",
+        "is_composited": false,
+        "meta": {
+          "title": "打开知乎热榜",
+          "description": "打开网页以获取网页内容",
+          "category": "basic",
+          "icon": "global"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "page_url",
+              "type": "string",
+              "description": "要读取的网页URL",
+              "required": true
+            },
+            {
+              "name": "fullscreen",
+              "type": "boolean",
+              "description": "是否全屏显示",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "page_url",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "https://www.zhihu.com/hot"
+                }
+              }
+            },
+            {
+              "name": "fullscreen",
+              "input": {
+                "type": "boolean",
+                "value": {
+                  "type": "literal",
+                  "content": true
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": []
+        },
+        "position": {
+          "x": -36.153110198435,
+          "y": 176.9382574877228
+        }
+      },
+      {
+        "module_id": "loop-1743526797077",
+        "module_type": "loop",
+        "is_composited": false,
+        "meta": {
+          "title": "循环遍历30个热榜",
+          "description": "重复执行指定操作",
+          "category": "basic",
+          "icon": "sync"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "array",
+              "type": "array",
+              "description": "要循环的数组",
+              "required": true
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "array",
+              "input": {
+                "type": "array",
+                "value": {
+                  "type": "literal",
+                  "content": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": [
+            {
+              "name": "iterations",
+              "type": "integer",
+              "description": "循环次数"
+            },
+            {
+              "name": "results",
+              "type": "array",
+              "description": "所有迭代的结果"
+            }
+          ]
+        },
+        "position": {
+          "x": 432.24035671365147,
+          "y": 181.43706718839445
+        },
+        "slots": {
+          "loop_body": {
+            "module_id": "slot-loop_body-1743526797077",
+            "module_type": "slot",
+            "is_composited": true,
+            "meta": {
+              "title": "循环体",
+              "description": "循环体",
+              "category": "loop_body"
+            },
+            "inputs": {},
+            "outputs": {
+              "output_defs": [
+                {
+                  "name": "index",
+                  "type": "integer",
+                  "description": "当前循环索引"
+                },
+                {
+                  "name": "item",
+                  "type": "object",
+                  "description": "当前循环项"
+                }
+              ]
+            },
+            "position": {
+              "x": 23.282147330555745,
+              "y": 425.5740790338032
+            },
+            "schema": {
+              "outputs": {
+                "item": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "modules": [
+              {
+                "module_id": "python_code-1743527174863",
+                "module_type": "python_code",
+                "is_composited": false,
+                "meta": {
+                  "title": "获取热榜元素xpath",
+                  "description": "执行自定义代码",
+                  "category": "basic",
+                  "icon": "code"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "index",
+                      "type": "string",
+                      "description": "输入参数",
+                      "default": {
+                        "type": "reference",
+                        "content": {
+                          "moduleID": "slot-loop_body-1743526797077",
+                          "nodeTitle": "循环体",
+                          "moduleType": "slot",
+                          "name": "index",
+                          "path": "index",
+                          "isArrayItem": false,
+                          "isArray": false,
+                          "source": "block-output"
+                        }
+                      },
+                      "required": false
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "index",
+                      "input": {
+                        "type": "string",
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "slot-loop_body-1743526797077",
+                            "nodeTitle": "循环体",
+                            "moduleType": "slot",
+                            "name": "index",
+                            "path": "index",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": [
+                    {
+                      "name": "hot_idx",
+                      "type": "string",
+                      "description": "代码执行结果"
+                    },
+                    {
+                      "name": "hot_title",
+                      "type": "string",
+                      "description": "输出参数",
+                      "required": false
+                    },
+                    {
+                      "name": "hot_num",
+                      "type": "string",
+                      "description": "输出参数",
+                      "required": false
+                    }
+                  ]
+                },
+                "position": {
+                  "x": 6.114129417125866,
+                  "y": 120.15253008792229
+                },
+                "code": {
+                  "python_code": "# AutoWeb代码编辑，在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 和 'ret' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params.input;\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '鼠鼠我呀', \"hobbies\": [\"爱写代码\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    # 获取输入参数\n    index = params['index'] # 引用自: slot-loop_body-1743526797077.index\n\n    # 构建输出对象\n    prefix = f\"/html/body/div[1]/div/main/div/div[2]/div[1]/div/div[4]/div/div[2]/div[1]/section[{index+1}]/\"\n    \n    ret: Output = {\n        \"hot_idx\": prefix + \"div[1]/div\",\n        \"hot_title\": prefix + \"div[2]/a/h2\",\n        \"hot_num\": prefix + \"div[2]/div\",\n    }\n\n    return ret\n"
+                }
+              },
+              {
+                "module_id": "ExtractDataBlock-1743526807690",
+                "module_type": "ExtractDataBlock",
+                "is_composited": false,
+                "meta": {
+                  "title": "提取热榜字段",
+                  "description": "根据xpath从网页中提取字段",
+                  "category": "basic",
+                  "icon": "import"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "fields",
+                      "type": "array",
+                      "description": "要提取的xpath列表",
+                      "required": true
+                    },
+                    {
+                      "name": "use_relative_xpath",
+                      "type": "boolean",
+                      "description": "是否使用相对XPath",
+                      "required": false
+                    },
+                    {
+                      "name": "export_to_excel",
+                      "type": "boolean",
+                      "description": "是否导出到Excel",
+                      "required": false
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "fields",
+                      "input": {
+                        "type":"array",
+                        "value": {
+                          "type": "reference",
+                          "content": [
+                            {
+                              "name": "hot_idx",
+                              "xpath": {
+                                "type": "reference",
+                                "content": {
+                                  "moduleID": "python_code-1743527174863",
+                                  "nodeTitle": "获取热榜元素xpath",
+                                  "moduleType": "python_code",
+                                  "name": "hot_idx",
+                                  "path": "hot_idx",
+                                  "isArrayItem": false,
+                                  "isArray": false,
+                                  "source": "block-output"
+                                }
+                              },
+                              "type": "string"
+                            },
+                            {
+                              "name": "hot_title",
+                              "xpath": {
+                                "type": "reference",
+                                "content": {
+                                  "moduleID": "python_code-1743527174863",
+                                  "nodeTitle": "获取热榜元素xpath",
+                                  "moduleType": "python_code",
+                                  "name": "hot_title",
+                                  "path": "hot_title",
+                                  "isArrayItem": false,
+                                  "isArray": false,
+                                  "source": "block-output"
+                                }
+                              },
+                              "type": "string"
+                            },
+                            {
+                              "name": "hot_num",
+                              "xpath": {
+                                "type": "reference",
+                                "content": {
+                                  "moduleID": "python_code-1743527174863",
+                                  "nodeTitle": "获取热榜元素xpath",
+                                  "moduleType": "python_code",
+                                  "name": "hot_num",
+                                  "path": "hot_num",
+                                  "isArrayItem": false,
+                                  "isArray": false,
+                                  "source": "block-output"
+                                }
+                              },
+                              "type": "string"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "name": "use_relative_xpath",
+                      "input": {
+                        "type": "boolean",
+                        "value": {
+                          "type": "literal",
+                          "content": false
+                        }
+                      }
+                    },
+                    {
+                      "name": "export_to_excel",
+                      "input": {
+                        "type": "boolean",
+                        "value": {
+                          "type": "literal",
+                          "content": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": [
+                    {
+                      "name": "results",
+                      "type": "object",
+                      "description": "提取的数据结果"
+                    },
+                    {
+                      "name": "result_count",
+                      "type": "integer",
+                      "description": "提取的数据数量"
+                    }
+                  ]
+                },
+                "position": {
+                  "x": 447.54905148240107,
+                  "y": 103.49002829636413
+                },
+                "schema": {
+                  "outputs": {
+                    "results": {
+                      "type": "object",
+                      "properties": {
+                        "hot_idx": {
+                          "type": "string",
+                          "description": ""
+                        },
+                        "hot_title": {
+                          "type": "string",
+                          "description": ""
+                        },
+                        "hot_num": {
+                          "type": "string",
+                          "description": ""
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "module_id": "python_code-1743620940461",
+                "module_type": "python_code",
+                "is_composited": false,
+                "meta": {
+                  "title": "代码节点",
+                  "description": "执行自定义代码",
+                  "category": "basic",
+                  "icon": "code"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "input0",
+                      "type": "string",
+                      "description": "输入参数",
+                      "default": {
+                        "type": "reference",
+                        "content": {
+                          "moduleID": "ExtractDataBlock-1743526807690",
+                          "nodeTitle": "提取热榜字段",
+                          "moduleType": "ExtractDataBlock",
+                          "name": "results",
+                          "property": "hot_idx",
+                          "path": "results.hot_idx",
+                          "isArrayItem": false,
+                          "isArray": false,
+                          "source": "block-output"
+                        }
+                      },
+                      "required": false
+                    },
+                    {
+                      "name": "input1",
+                      "type": "string",
+                      "description": "输入参数",
+                      "default": {
+                        "type": "reference",
+                        "content": {
+                          "moduleID": "ExtractDataBlock-1743526807690",
+                          "nodeTitle": "提取热榜字段",
+                          "moduleType": "ExtractDataBlock",
+                          "name": "results",
+                          "property": "hot_title",
+                          "path": "results.hot_title",
+                          "isArrayItem": false,
+                          "isArray": false,
+                          "source": "block-output"
+                        }
+                      },
+                      "required": false
+                    },
+                    {
+                      "name": "input2",
+                      "type": "string",
+                      "description": "输入参数",
+                      "default": {
+                        "type": "reference",
+                        "content": {
+                          "moduleID": "ExtractDataBlock-1743526807690",
+                          "nodeTitle": "提取热榜字段",
+                          "moduleType": "ExtractDataBlock",
+                          "name": "results",
+                          "property": "hot_num",
+                          "path": "results.hot_num",
+                          "isArrayItem": false,
+                          "isArray": false,
+                          "source": "block-output"
+                        }
+                      },
+                      "required": false
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "input0",
+                      "input": {
+                        "type": "string",
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "ExtractDataBlock-1743526807690",
+                            "nodeTitle": "提取热榜字段",
+                            "moduleType": "ExtractDataBlock",
+                            "name": "results",
+                            "property": "hot_idx",
+                            "path": "results.hot_idx",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "name": "input1",
+                      "input": {
+                        "type": "string",
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "ExtractDataBlock-1743526807690",
+                            "nodeTitle": "提取热榜字段",
+                            "moduleType": "ExtractDataBlock",
+                            "name": "results",
+                            "property": "hot_title",
+                            "path": "results.hot_title",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "name": "input2",
+                      "input": {
+                        "type": "string",
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "ExtractDataBlock-1743526807690",
+                            "nodeTitle": "提取热榜字段",
+                            "moduleType": "ExtractDataBlock",
+                            "name": "results",
+                            "property": "hot_num",
+                            "path": "results.hot_num",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": [
+                    {
+                      "name": "data",
+                      "type": "string",
+                      "description": "代码执行结果"
+                    }
+                  ]
+                },
+                "position": {
+                  "x": 917.2961789267898,
+                  "y": 118.5541375945196
+                },
+                "code": {
+                  "python_code": "# AutoWeb代码编辑，在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 和 'ret' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params.input;\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '鼠鼠我呀', \"hobbies\": [\"爱写代码\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    # 构建输出对象\n    ret: Output = {\n        \"data\": params[\"input0\"]+params[\"input1\"]+params[\"input2\"]\n    }\n    return ret\n"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }

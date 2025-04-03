@@ -22,13 +22,12 @@
         <div class="node-list">
           <div 
             v-for="nodeType in filteredNodeTypes" 
-            :key="nodeType.type"
+            :key="getNodeTypeKey(nodeType)"
             class="node-item" 
-            @click="addNodeType(nodeType.type)"
+            @click="addNodeType(getNodeTypeKey(nodeType))"
           >
             <div :class="['node-icon', `node-icon-${nodeType.meta.category}`]">
-              <component :is="`${nodeType.meta.icon}-outlined`" v-if="nodeType.meta.icon" />
-              <template v-else>⚙️</template>
+              <ModuleIcon :icon="nodeType.meta.icon" :category="nodeType.meta.category" />
             </div>
             <div class="node-name">{{ nodeType.meta.title }}</div>
           </div>
@@ -47,13 +46,12 @@
           <div class="node-list">
             <div 
               v-for="nodeType in nodeTypes" 
-              :key="nodeType.type"
+              :key="getNodeTypeKey(nodeType)"
               class="node-item" 
-              @click="addNodeType(nodeType.type)"
+              @click="addNodeType(getNodeTypeKey(nodeType))"
             >
               <div :class="['node-icon', `node-icon-${category}`]">
-                <component :is="`${nodeType.meta.icon}-outlined`" v-if="nodeType.meta.icon" />
-                <template v-else>⚙️</template>
+                <ModuleIcon :icon="nodeType.meta.icon" :category="category" />
               </div>
               <div class="node-name">{{ nodeType.meta.title }}</div>
             </div>
@@ -66,23 +64,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { 
-  CodeOutlined,
-  ForkOutlined,
-  SyncOutlined,
-  ImportOutlined,
-  ExportOutlined,
-  DatabaseOutlined,
-  FileAddOutlined,
-  DeleteOutlined,
-  RobotOutlined,
-  ApiOutlined,
-  ShareAltOutlined,
-  MessageOutlined,
-  GlobalOutlined,
-  ApartmentOutlined
-} from '@ant-design/icons-vue'
 import { useNodeTypes, loadNodeTypes } from '@/utils/nodeFactory'
+import ModuleIcon from '@/components/common/ModuleIcon.vue'
 
 // 定义暴露给父组件的事件
 const emit = defineEmits(['select', 'search'])
@@ -121,7 +104,7 @@ const filteredNodeTypes = computed(() => {
   return nodeTypes.value.filter(nodeType => {
     const title = nodeType.meta.title.toLowerCase()
     const desc = nodeType.meta.description.toLowerCase()
-    const type = nodeType.type.toLowerCase()
+    const type = nodeType.module_type.toLowerCase()
     
     return title.includes(query) || 
            desc.includes(query) || 
@@ -132,14 +115,9 @@ const filteredNodeTypes = computed(() => {
 // 获取分类显示名称
 const getCategoryTitle = (category) => {
   const categoryMap = {
-    'ai': '大模型',
+    'basic': '基础组件',
     'web': 'Web',
     'composite': '工作流',
-    'if-else': '业务逻辑',
-    'loop': '业务逻辑',
-    'code': '业务逻辑',
-    'input': '输入&输出',
-    'output': '输入&输出',
     'session': '会话管理',
     'database': '数据库',
     'default': '其他'
@@ -158,9 +136,19 @@ const onSearchInput = (e) => {
   searchQuery.value = e.target.value
 }
 
+// 获取节点类型的唯一键值
+const getNodeTypeKey = (nodeType) => {
+  // 如果是工作流节点，使用module_type和workflow_id的组合作为唯一标识符
+  if (nodeType.module_type === 'workflow' && nodeType.workflow_id) {
+    return `${nodeType.module_type}:${nodeType.workflow_id}`;
+  }
+  // 其他类型节点仍然使用module_type作为标识符
+  return nodeType.module_type;
+}
+
 // 添加指定类型的节点
-const addNodeType = (type) => {
-  emit('select', type)
+const addNodeType = (typeKey) => {
+  emit('select', typeKey)
 }
 
 // 加载节点类型
@@ -244,7 +232,6 @@ onMounted(async () => {
 }
 
 .node-icon {
-  font-size: 24px;
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -252,7 +239,6 @@ onMounted(async () => {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background-color: #e8f0fe;
   color: #1890ff;
 }
 
