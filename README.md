@@ -4,8 +4,8 @@ AutoWeb工作流编辑器是一个基于Vue 3和Vue Flow的现代化工作流设
 
 **目前功能非常不完善，欢迎感兴趣的开发者一起参与开发，欢迎star，共同完善这个项目，为网页自动化贡献一份力量**
 
-本仓库包含自动化代码（Taskflow）和工作流执行引擎代码（Workflow）
-前端代码位于https://github.com/hc-tec/autoweb-frontend
+本仓库包含前端代码
+自动化代码（Taskflow）和工作流执行引擎代码（Workflow）位于https://github.com/hc-tec/autoweb-frontend
 
 ## 功能特性
 
