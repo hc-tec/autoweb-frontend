@@ -48,7 +48,6 @@ AutoWeb工作流编辑器是一个基于Vue 3和Vue Flow的现代化工作流设
 - Vue 3：使用Composition API构建
 - Vue Flow：流程图可视化
 - Ant Design Vue：UI组件库
-- TypeScript：类型支持
 
 ### 主要模块
 1. 工作流编辑器核心（WorkflowEditor）
