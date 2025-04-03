@@ -1,0 +1,1116 @@
+{
+    "version": "1.0.0",
+    "module_id": "workflow_1743714542369",
+    "module_type": "workflow",
+    "is_composited": false,
+    "modules": [
+      {
+        "module_id": "DynamicInputNode-1743709743061",
+        "module_type": "DynamicInputNode",
+        "is_composited": false,
+        "meta": {
+          "title": "小红书输入配置",
+          "description": "自定义输入参数，输出与输入相同",
+          "category": "basic",
+          "icon": "import"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "url",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "search_words",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "input_xpath",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "search_btn_xpath",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "num",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "close_btn_xpath",
+              "type": "string",
+              "description": "",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "url",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "https://www.xiaohongshu.com/explore"
+                }
+              }
+            },
+            {
+              "name": "search_words",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "计算机实习"
+                }
+              }
+            },
+            {
+              "name": "input_xpath",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "/html/body/div[2]/div[1]/div[1]/header/div[1]/input"
+                }
+              }
+            },
+            {
+              "name": "search_btn_xpath",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "/html/body/div[2]/div[1]/div[1]/header/div[1]/div/div"
+                }
+              }
+            },
+            {
+              "name": "num",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "10"
+                }
+              }
+            },
+            {
+              "name": "close_btn_xpath",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "/html/body/div[6]/div[2]"
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": [
+            {
+              "name": "url",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "search_words",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "input_xpath",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "search_btn_xpath",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "num",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "close_btn_xpath",
+              "type": "string",
+              "description": ""
+            }
+          ]
+        },
+        "position": {
+          "x": -82.61986153948189,
+          "y": -26.552360189640964
+        }
+      },
+      {
+        "module_id": "OpenPageBlock-1743709744972",
+        "module_type": "OpenPageBlock",
+        "is_composited": false,
+        "meta": {
+          "title": "打开网页",
+          "description": "打开网页以获取网页内容",
+          "category": "basic",
+          "icon": "chrome"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "page_url",
+              "type": "string",
+              "description": "要读取的网页URL",
+              "required": true
+            },
+            {
+              "name": "fullscreen",
+              "type": "boolean",
+              "description": "是否全屏显示",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "page_url",
+              "input": {
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "DynamicInputNode-1743709743061",
+                    "nodeTitle": "小红书输入配置",
+                    "moduleType": "DynamicInputNode",
+                    "name": "url",
+                    "path": "url",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                },
+                "type": "string"
+              }
+            },
+            {
+              "name": "fullscreen",
+              "input": {
+                "type": "boolean",
+                "value": {
+                  "type": "literal",
+                  "content": true
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": []
+        },
+        "position": {
+          "x": 489.7080021597455,
+          "y": -26.552360189640936
+        }
+      },
+      {
+        "module_id": "InputBlock-1743709745737",
+        "module_type": "InputBlock",
+        "is_composited": false,
+        "meta": {
+          "title": "输入框",
+          "description": "给输入框输入文字",
+          "category": "basic",
+          "icon": "form"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "xpath",
+              "type": "string",
+              "description": "输入框的XPath",
+              "required": true
+            },
+            {
+              "name": "input_value",
+              "type": "string",
+              "description": "要输入的文本",
+              "required": false
+            },
+            {
+              "name": "clear_first",
+              "type": "boolean",
+              "description": "是否先清空输入框",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "xpath",
+              "input": {
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "DynamicInputNode-1743709743061",
+                    "nodeTitle": "小红书输入配置",
+                    "moduleType": "DynamicInputNode",
+                    "name": "input_xpath",
+                    "path": "input_xpath",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                },
+                "type": "string"
+              }
+            },
+            {
+              "name": "input_value",
+              "input": {
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "DynamicInputNode-1743709743061",
+                    "nodeTitle": "小红书输入配置",
+                    "moduleType": "DynamicInputNode",
+                    "name": "search_words",
+                    "path": "search_words",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                },
+                "type": "string"
+              }
+            },
+            {
+              "name": "clear_first",
+              "input": {
+                "type": "boolean",
+                "value": {
+                  "type": "literal",
+                  "content": true
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": []
+        },
+        "position": {
+          "x": 947.278295278873,
+          "y": -16.940788529668225
+        }
+      },
+      {
+        "module_id": "ClickElementBlock-1743709749285",
+        "module_type": "ClickElementBlock",
+        "is_composited": false,
+        "meta": {
+          "title": "点击搜索按钮",
+          "description": "点击元素",
+          "category": "basic",
+          "icon": "aim"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "xpath",
+              "type": "string",
+              "description": "要点击元素的XPath",
+              "required": true
+            },
+            {
+              "name": "need_track",
+              "type": "boolean",
+              "description": "是否跟踪页面变化",
+              "required": true
+            },
+            {
+              "name": "wait_time",
+              "type": "string",
+              "description": "等待时间",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "xpath",
+              "input": {
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "DynamicInputNode-1743709743061",
+                    "nodeTitle": "小红书输入配置",
+                    "moduleType": "DynamicInputNode",
+                    "name": "search_btn_xpath",
+                    "path": "search_btn_xpath",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                },
+                "type": "string"
+              }
+            },
+            {
+              "name": "need_track",
+              "input": {
+                "value": {
+                  "type": "literal",
+                  "content": false
+                },
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "wait_time",
+              "input": {
+                "value": {
+                  "type": "literal",
+                  "content": "2"
+                },
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": []
+        },
+        "position": {
+          "x": -100.96430499772777,
+          "y": 338.6873628893228
+        }
+      },
+      {
+        "module_id": "python_code-1743709915586",
+        "module_type": "python_code",
+        "is_composited": false,
+        "meta": {
+          "title": "用于生成循环数组",
+          "description": "执行自定义代码",
+          "category": "basic",
+          "icon": "code"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "num",
+              "type": "string",
+              "description": "输入参数",
+              "default": {
+                "type": "reference",
+                "content": {
+                  "moduleID": "DynamicInputNode-1743709743061",
+                  "nodeTitle": "小红书输入配置",
+                  "moduleType": "DynamicInputNode",
+                  "name": "num",
+                  "path": "num",
+                  "isArrayItem": false,
+                  "isArray": false,
+                  "source": "block-output"
+                }
+              },
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "num",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "DynamicInputNode-1743709743061",
+                    "nodeTitle": "小红书输入配置",
+                    "moduleType": "DynamicInputNode",
+                    "name": "num",
+                    "path": "num",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": [
+            {
+              "name": "data",
+              "type": "string",
+              "description": "代码执行结果"
+            }
+          ]
+        },
+        "position": {
+          "x": 447.7387013678401,
+          "y": 330.1004352894425
+        },
+        "code": {
+          "python_code": "# AutoWeb代码编辑，在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 和 'ret' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params.input;\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '鼠鼠我呀', \"hobbies\": [\"爱写代码\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    # 构建输出对象\n    ret: Output = {\n        'data': [i for i in range(int(params['num']))]\n    }\n    return ret\n"
+        }
+      },
+      {
+        "module_id": "loop-1743709893094",
+        "module_type": "loop",
+        "is_composited": false,
+        "meta": {
+          "title": "循环点击帖子",
+          "description": "重复执行指定操作",
+          "category": "basic",
+          "icon": "redo"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "array",
+              "type": "array",
+              "description": "要循环的数组",
+              "required": true
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "array",
+              "input": {
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "python_code-1743709915586",
+                    "nodeTitle": "用于生成循环数组",
+                    "moduleType": "python_code",
+                    "name": "data",
+                    "path": "data",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                },
+                "type": "array"
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": [
+            {
+              "name": "iterations",
+              "type": "string",
+              "description": "循环次数"
+            },
+            {
+              "name": "results",
+              "type": "array",
+              "description": "所有迭代的结果"
+            }
+          ]
+        },
+        "position": {
+          "x": 930.5005023160448,
+          "y": 319.4682243590471
+        },
+        "slots": {
+          "loop_body": {
+            "module_id": "slot-loop_body-1743709893094",
+            "module_type": "slot",
+            "is_composited": true,
+            "meta": {
+              "title": "循环体",
+              "description": "循环体",
+              "category": "loop_body"
+            },
+            "inputs": {},
+            "outputs": {
+              "output_defs": [
+                {
+                  "name": "index",
+                  "type": "string",
+                  "description": "当前循环索引"
+                },
+                {
+                  "name": "item",
+                  "type": "object",
+                  "description": "当前循环项"
+                }
+              ]
+            },
+            "position": {
+              "x": -129.97623750094658,
+              "y": 554.3704406888064
+            },
+            "schema": {
+              "outputs": {
+                "item": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "modules": [
+              {
+                "module_id": "python_code-1743710071939",
+                "module_type": "python_code",
+                "is_composited": false,
+                "meta": {
+                  "title": "代码拼接-获取帖子xpath",
+                  "description": "执行自定义代码",
+                  "category": "basic",
+                  "icon": "code"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "index",
+                      "type": "string",
+                      "description": "输入参数",
+                      "default": {
+                        "type": "reference",
+                        "content": {
+                          "moduleID": "slot-loop_body-1743709893094",
+                          "nodeTitle": "循环体",
+                          "moduleType": "slot",
+                          "name": "index",
+                          "path": "index",
+                          "isArrayItem": false,
+                          "isArray": false,
+                          "source": "block-output"
+                        }
+                      },
+                      "required": false
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "index",
+                      "input": {
+                        "type": "string",
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "slot-loop_body-1743709893094",
+                            "nodeTitle": "循环体",
+                            "moduleType": "slot",
+                            "name": "index",
+                            "path": "index",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": [
+                    {
+                      "name": "data",
+                      "type": "string",
+                      "description": "代码执行结果"
+                    }
+                  ]
+                },
+                "position": {
+                  "x": 56.29474481433245,
+                  "y": 260.2526023474477
+                },
+                "code": {
+                  "python_code": "# AutoWeb代码编辑，在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 和 'ret' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params.input;\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '鼠鼠我呀', \"hobbies\": [\"爱写代码\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    # 构建输出对象\n    ret: Output = {\n        \"data\": f\"/html/body/div[2]/div[1]/div[2]/div[2]/div/div/div[3]/div[1]/section[{params['index']}]\"\n    }\n    return ret\n"
+                }
+              },
+              {
+                "module_id": "ClickElementBlock-1743710081465",
+                "module_type": "ClickElementBlock",
+                "is_composited": false,
+                "meta": {
+                  "title": "点击帖子",
+                  "description": "点击元素",
+                  "category": "basic",
+                  "icon": "aim"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "xpath",
+                      "type": "string",
+                      "description": "要点击元素的XPath",
+                      "required": true
+                    },
+                    {
+                      "name": "need_track",
+                      "type": "boolean",
+                      "description": "是否跟踪页面变化",
+                      "required": true
+                    },
+                    {
+                      "name": "wait_time",
+                      "type": "string",
+                      "description": "等待时间",
+                      "required": false
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "xpath",
+                      "input": {
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "python_code-1743710071939",
+                            "nodeTitle": "代码拼接-获取帖子xpath",
+                            "moduleType": "python_code",
+                            "name": "data",
+                            "path": "data",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        },
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "need_track",
+                      "input": {
+                        "value": {
+                          "type": "literal",
+                          "content": false
+                        },
+                        "type": "boolean"
+                      }
+                    },
+                    {
+                      "name": "wait_time",
+                      "input": {
+                        "type": "string",
+                        "value": {
+                          "type": "literal",
+                          "content": 3
+                        }
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": []
+                },
+                "position": {
+                  "x": 471.4946690781741,
+                  "y": 272.26664983640933
+                }
+              },
+              {
+                "module_id": "ExtractDataBlock-1743710377233",
+                "module_type": "ExtractDataBlock",
+                "is_composited": false,
+                "meta": {
+                  "title": "提取字段",
+                  "description": "根据xpath从网页中提取字段",
+                  "category": "basic",
+                  "icon": "select"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "fields",
+                      "type": "array",
+                      "description": "要提取的xpath列表",
+                      "required": true
+                    },
+                    {
+                      "name": "use_relative_xpath",
+                      "type": "boolean",
+                      "description": "是否使用相对XPath",
+                      "required": false
+                    },
+                    {
+                      "name": "export_to_excel",
+                      "type": "boolean",
+                      "description": "是否导出到Excel",
+                      "required": false
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "fields",
+                      "input": {
+                        "value": {
+                          "type": "reference",
+                          "content": [
+                            {
+                              "name": "author",
+                              "xpath": {
+                                "type": "literal",
+                                "content": "/html/body/div[6]/div[1]/div[4]/div[1]/div/div[1]/a[2]/span"
+                              },
+                              "type": "string"
+                            },
+                            {
+                              "name": "title",
+                              "xpath": {
+                                "type": "literal",
+                                "content": "/html/body/div[6]/div[1]/div[4]/div[2]/div[1]/div[1]"
+                              },
+                              "type": "string"
+                            },
+                            {
+                              "name": "content",
+                              "xpath": {
+                                "type": "literal",
+                                "content": "/html/body/div[6]/div[1]/div[4]/div[2]/div[1]/div[2]/span/span[1]"
+                              },
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "type": "array"
+                      }
+                    },
+                    {
+                      "name": "use_relative_xpath",
+                      "input": {
+                        "type": "boolean",
+                        "value": {
+                          "type": "literal",
+                          "content": false
+                        }
+                      }
+                    },
+                    {
+                      "name": "export_to_excel",
+                      "input": {
+                        "type": "boolean",
+                        "value": {
+                          "type": "literal",
+                          "content": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": [
+                    {
+                      "name": "results",
+                      "type": "array",
+                      "description": "提取的数据结果"
+                    },
+                    {
+                      "name": "result_count",
+                      "type": "string",
+                      "description": "提取的数据数量"
+                    }
+                  ]
+                },
+                "position": {
+                  "x": 926.1835991852231,
+                  "y": 261.92176573438655
+                },
+                "schema": {
+                  "outputs": {
+                    "results": {
+                      "type": "object",
+                      "properties": {}
+                    }
+                  }
+                }
+              },
+              {
+                "module_id": "ClickElementBlock-1743711646068",
+                "module_type": "ClickElementBlock",
+                "is_composited": false,
+                "meta": {
+                  "title": "点击空白关闭帖子",
+                  "description": "点击元素",
+                  "category": "basic",
+                  "icon": "aim"
+                },
+                "inputs": {
+                  "input_defs": [
+                    {
+                      "name": "xpath",
+                      "type": "string",
+                      "description": "要点击元素的XPath",
+                      "required": true
+                    },
+                    {
+                      "name": "need_track",
+                      "type": "boolean",
+                      "description": "是否跟踪页面变化",
+                      "required": true
+                    }
+                  ],
+                  "input_parameters": [
+                    {
+                      "name": "xpath",
+                      "input": {
+                        "value": {
+                          "type": "reference",
+                          "content": {
+                            "moduleID": "DynamicInputNode-1743709743061",
+                            "nodeTitle": "小红书输入配置",
+                            "moduleType": "DynamicInputNode",
+                            "name": "close_btn_xpath",
+                            "path": "close_btn_xpath",
+                            "isArrayItem": false,
+                            "isArray": false,
+                            "source": "block-output"
+                          }
+                        },
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "need_track",
+                      "input": {
+                        "value": {
+                          "type": "literal",
+                          "content": false
+                        },
+                        "type": "boolean"
+                      }
+                    }
+                  ]
+                },
+                "outputs": {
+                  "output_defs": []
+                },
+                "position": {
+                  "x": 1396.4816657834278,
+                  "y": 293.7524472756602
+                }
+              }
+            ]
+          }
+        },
+        "schema": {
+          "outputs": {
+            "results": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      {
+        "module_id": "DynamicOutputNode-1743709743529",
+        "module_type": "DynamicOutputNode",
+        "is_composited": false,
+        "meta": {
+          "title": "动态输出节点",
+          "description": "作为工作流输出节点，接收上游节点的输入作为工作流输出",
+          "category": "basic",
+          "icon": "export"
+        },
+        "inputs": {
+          "input_defs": [
+            {
+              "name": "output",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "output",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "loop-1743709893094",
+                    "nodeTitle": "循环点击帖子",
+                    "moduleType": "loop",
+                    "name": "results",
+                    "path": "results",
+                    "isArrayItem": false,
+                    "isArray": true,
+                    "source": "block-output"
+                  }
+                }
+              }
+            },
+            {
+              "name": "count",
+              "input": {
+                "type": "integer",
+                "value": {
+                  "type": "reference",
+                  "content": {
+                    "moduleID": "loop-1743709893094",
+                    "nodeTitle": "循环点击帖子",
+                    "moduleType": "loop",
+                    "name": "iterations",
+                    "path": "iterations",
+                    "isArrayItem": false,
+                    "isArray": false,
+                    "source": "block-output"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "outputs": {
+          "output_defs": [
+            {
+              "name": "output",
+              "type": "string",
+              "description": ""
+            },
+            {
+              "name": "count",
+              "type": "integer",
+              "description": ""
+            }
+          ]
+        },
+        "position": {
+          "x": 1490.3530452902849,
+          "y": 305.4826984299508
+        }
+      }
+    ],
+    "meta": {
+      "title": "小红书搜索",
+      "description": "小红书搜索组件，用于搜索并获取搜索结果帖子信息，信息包含作者、标题以及内容",
+      "category": "custom"
+    },
+    "inputs": {
+      "input_defs": [
+        {
+          "name": "url",
+          "type": "string",
+          "description": "",
+          "required": false
+        },
+        {
+          "name": "search_words",
+          "type": "string",
+          "description": "",
+          "required": false
+        },
+        {
+          "name": "input_xpath",
+          "type": "string",
+          "description": "",
+          "required": false
+        },
+        {
+          "name": "search_btn_xpath",
+          "type": "string",
+          "description": "",
+          "required": false
+        },
+        {
+          "name": "num",
+          "type": "string",
+          "description": "",
+          "required": false
+        },
+        {
+          "name": "close_btn_xpath",
+          "type": "string",
+          "description": "",
+          "required": false
+        }
+      ],
+      "input_parameters": [
+        {
+          "name": "url",
+          "input": {
+            "type": "string",
+            "value": {
+              "type": "literal",
+              "content": "https://www.xiaohongshu.com/explore"
+            }
+          }
+        },
+        {
+          "name": "search_words",
+          "input": {
+            "type": "string",
+            "value": {
+              "type": "literal",
+              "content": "计算机实习"
+            }
+          }
+        },
+        {
+          "name": "input_xpath",
+          "input": {
+            "type": "string",
+            "value": {
+              "type": "literal",
+              "content": "/html/body/div[2]/div[1]/div[1]/header/div[1]/input"
+            }
+          }
+        },
+        {
+          "name": "search_btn_xpath",
+          "input": {
+            "type": "string",
+            "value": {
+              "type": "literal",
+              "content": "/html/body/div[2]/div[1]/div[1]/header/div[1]/div/div"
+            }
+          }
+        },
+        {
+          "name": "num",
+          "input": {
+            "type": "string",
+            "value": {
+              "type": "literal",
+              "content": "10"
+            }
+          }
+        },
+        {
+          "name": "close_btn_xpath",
+          "input": {
+            "type": "string",
+            "value": {
+              "type": "literal",
+              "content": "/html/body/div[6]/div[2]"
+            }
+          }
+        }
+      ]
+    },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "integer",
+          "description": ""
+        }
+      ]
+    }
+  }

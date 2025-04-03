@@ -393,6 +393,8 @@ export function saveWorkflowToJson(flowData) {
     
     // 基本模块数据
     const moduleData = JSON.parse(JSON.stringify(node.data));
+    moduleData.position = node.position;
+    
 
     let hasSlots = false;
     moduleData.slots = {}
@@ -599,9 +601,9 @@ export function saveWorkflowToJson(flowData) {
     }
   }
 
+  // 递归修复所有模块中的引用格式
+  recursiveFixAllModulesReferences(workflowJson.modules);
   
-  
-
   // 是否存在输入输出节点
   const inputNode = workflowJson.modules.find(module => module.module_type === "DynamicInputNode")
   const outputNode = workflowJson.modules.find(module => module.module_type === 'DynamicOutputNode')
@@ -616,6 +618,79 @@ export function saveWorkflowToJson(flowData) {
   }
   
   return workflowJson
+}
+
+/**
+ * 递归修复所有模块中的引用格式问题
+ * @param {Array} modules 模块数组
+ */
+function recursiveFixAllModulesReferences(modules) {
+  if (!modules || !Array.isArray(modules)) {
+    return;
+  }
+  
+  for (const module of modules) {
+    // 修复当前模块的input_parameters
+    if (module.inputs && module.inputs.input_parameters) {
+      module.inputs.input_parameters = fixReferenceValueFormat(module.inputs.input_parameters);
+    }
+    
+    // 递归处理嵌套模块
+    if (module.modules && Array.isArray(module.modules)) {
+      recursiveFixAllModulesReferences(module.modules);
+    }
+    
+    // 递归处理slots中的模块
+    if (module.slots && typeof module.slots === 'object') {
+      for (const slotName in module.slots) {
+        const slotModule = module.slots[slotName];
+        if (slotModule) {
+          // 修复slot模块本身的input_parameters
+          if (slotModule.inputs && slotModule.inputs.input_parameters) {
+            slotModule.inputs.input_parameters = fixReferenceValueFormat(slotModule.inputs.input_parameters);
+          }
+          
+          // 递归处理slot模块的子模块
+          if (slotModule.modules && Array.isArray(slotModule.modules)) {
+            recursiveFixAllModulesReferences(slotModule.modules);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * 修复输入参数中的引用变量格式
+ * @param {Array} inputParameters 输入参数数组
+ * @returns {Array} 修复后的输入参数数组
+ */
+function fixReferenceValueFormat(inputParameters) {
+  if (!inputParameters || !Array.isArray(inputParameters)) {
+    return inputParameters;
+  }
+  
+  return inputParameters.map(param => {
+    // 克隆参数对象，避免修改原始对象
+    const newParam = JSON.parse(JSON.stringify(param));
+    
+    // 检查是否存在嵌套多一层的引用格式
+    if (newParam.input && 
+        newParam.input.value && 
+        newParam.input.value.type === 'literal' && 
+        newParam.input.value.content && 
+        newParam.input.value.content.type === 'reference') {
+      
+      // 修正格式：将内层的reference提到外层，移除多余的literal层
+      console.log(`修复参数 ${newParam.name} 的引用格式`);
+      newParam.input.value = {
+        type: 'reference',
+        content: newParam.input.value.content.content
+      };
+    }
+    
+    return newParam;
+  });
 }
 
 /**

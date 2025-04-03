@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "module_id": "workflow_1743716138134",
+  "module_id": "workflow_1743702871279",
   "module_type": "workflow",
   "is_composited": false,
   "modules": [
@@ -46,8 +46,8 @@
         ]
       },
       "position": {
-        "x": -467.31924142977994,
-        "y": 176.1761168217607
+        "x": 582.2403567136514,
+        "y": 181.43706718839445
       }
     },
     {
@@ -213,8 +213,8 @@
             ]
           },
           "position": {
-            "x": -149.47603571786556,
-            "y": 457.1397812336056
+            "x": 23.282147330555745,
+            "y": 425.5740790338032
           },
           "schema": {
             "outputs": {
@@ -301,8 +301,8 @@
                 ]
               },
               "position": {
-                "x": 121.00185843257603,
-                "y": 128.04395563787295
+                "x": 6.114129417125866,
+                "y": 120.15253008792229
               },
               "code": {
                 "python_code": "# AutoWeb代码编辑，在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 和 'ret' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params.input;\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '鼠鼠我呀', \"hobbies\": [\"爱写代码\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    # 获取输入参数\n    index = params['index'] # 引用自: slot-loop_body-1743526797077.index\n\n    # 构建输出对象\n    prefix = f\"/html/body/div[1]/div/main/div/div[2]/div[1]/div/div[4]/div/div[2]/div[1]/section[{index+1}]/\"\n    \n    ret: Output = {\n        \"hot_idx\": prefix + \"div[1]/div\",\n        \"hot_title\": prefix + \"div[2]/a/h2\",\n        \"hot_num\": prefix + \"div[2]/div\",\n    }\n\n    return ret\n"
@@ -439,8 +439,8 @@
                 ]
               },
               "position": {
-                "x": 564.6051971400018,
-                "y": 115.32716662129008
+                "x": 447.54905148240107,
+                "y": 103.49002829636413
               },
               "schema": {
                 "outputs": {
@@ -610,8 +610,8 @@
                 ]
               },
               "position": {
-                "x": 1056.7113636425838,
-                "y": 135.65222628607933
+                "x": 917.2961789267898,
+                "y": 118.5541375945196
               },
               "code": {
                 "python_code": "# AutoWeb代码编辑，在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 和 'ret' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params.input;\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '鼠鼠我呀', \"hobbies\": [\"爱写代码\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    # 构建输出对象\n    ret: Output = {\n        \"data\": params[\"input0\"]+params[\"input1\"]+params[\"input2\"]\n    }\n    return ret\n"
@@ -738,8 +738,8 @@
         ]
       },
       "position": {
-        "x": 1019.6305441115601,
-        "y": 173.42220140438906
+        "x": 732.2403567136514,
+        "y": 181.43706718839445
       }
     }
   ],

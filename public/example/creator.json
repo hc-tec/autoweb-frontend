@@ -1,0 +1,17 @@
+{
+    "module_id": "workflow_1743625555853",
+    "module_type": "composite",
+    "is_composited": false,
+    "meta": {
+      "title": "创造更多可能",
+      "description": "由你创造更多可能",
+      "category": "workflow",
+      "icon": "question"
+    },
+    "inputs": {
+      "input_defs": []
+    },
+    "outputs": {
+      "output_defs": []
+    }
+}

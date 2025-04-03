@@ -3,6 +3,134 @@
     "module_type": "workflow",
     "is_composited": false,
     "is_workflow_node": true,
+    "workflow_id": "rednote_search",
+    "meta": {
+      "title": "小红书搜索",
+      "description": "小红书搜索组件，用于搜索并获取搜索结果帖子信息，信息包含作者、标题以及内容",
+      "category": "workflow",
+      "icon": "rednote"
+    },
+    "inputs": {
+          "input_defs": [
+            {
+              "name": "url",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "search_words",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "input_xpath",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "search_btn_xpath",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "num",
+              "type": "string",
+              "description": "",
+              "required": false
+            },
+            {
+              "name": "close_btn_xpath",
+              "type": "string",
+              "description": "",
+              "required": false
+            }
+          ],
+          "input_parameters": [
+            {
+              "name": "url",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "https://www.xiaohongshu.com/explore"
+                }
+              }
+            },
+            {
+              "name": "search_words",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "计算机实习"
+                }
+              }
+            },
+            {
+              "name": "input_xpath",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "/html/body/div[2]/div[1]/div[1]/header/div[1]/input"
+                }
+              }
+            },
+            {
+              "name": "search_btn_xpath",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "/html/body/div[2]/div[1]/div[1]/header/div[1]/div/div"
+                }
+              }
+            },
+            {
+              "name": "num",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "10"
+                }
+              }
+            },
+            {
+              "name": "close_btn_xpath",
+              "input": {
+                "type": "string",
+                "value": {
+                  "type": "literal",
+                  "content": "/html/body/div[6]/div[2]"
+                }
+              }
+            }
+          ]
+        },
+    "outputs": {
+      "output_defs": [
+        {
+          "name": "output",
+          "type": "string",
+          "description": ""
+        },
+        {
+          "name": "count",
+          "type": "integer",
+          "description": ""
+        }
+      ]
+    }
+  },
+  {
+    "module_type": "workflow",
+    "is_composited": false,
+    "is_workflow_node": true,
     "workflow_id": "zhihu_789",
     "meta": {
       "title": "知乎热榜",
@@ -112,6 +240,24 @@
     }
   },
   {
+    "module_type": "workflow",
+    "is_composited": false,
+    "is_workflow_node": true,
+    "workflow_id": "creator",
+    "meta": {
+      "title": "创造更多可能",
+      "description": "由你创造更多可能",
+      "category": "workflow",
+      "icon": "question"
+    },
+    "inputs": {
+      "input_defs": []
+    },
+    "outputs": {
+      "output_defs": []
+    }
+  },
+  {
     "module_type": "OpenPageBlock",
     "is_composited": false,
     "meta": {
@@ -180,7 +326,7 @@
           "required": true
         },
         {
-          "name": "text",
+          "name": "input_value",
           "type": "string",
           "description": "要输入的文本",
           "required": false
@@ -204,7 +350,7 @@
                 }
             },
             {
-                "name": "text",
+                "name": "input_value",
                 "input": {
                     "type": "string",
                     "value": {
@@ -464,6 +610,12 @@
             "type": "boolean",
             "description": "是否跟踪页面变化",
             "required": true
+          },
+          {
+            "name": "wait_time",
+            "type": "string",
+            "description": "等待时间",
+            "required": false
           }
       ],
       "input_parameters": [
@@ -484,6 +636,16 @@
                     "value": {
                         "type": "literal",
                         "content": true
+                    }
+                }
+            },
+            {
+                "name": "wait_time",
+                "input": {
+                    "type": "string",
+                    "value": {
+                        "type": "literal",
+                        "content": 0
                     }
                 }
             }
